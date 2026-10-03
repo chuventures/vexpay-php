@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VexPay\Tests;
 
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ConnectTimeoutException;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
@@ -135,9 +136,10 @@ final class ClientTest extends TestCase
 
     public function testTimeoutsMapToTimeoutException(): void
     {
-        $api = (new MockApi())->failWith(
-            new ConnectException('cURL error 28', new Request('GET', '/v1/banks'), null, ['errno' => 28]),
-        );
+        $request = new Request('GET', '/v1/banks');
+        $api = (new MockApi())->failWith(class_exists(ConnectTimeoutException::class)
+            ? new ConnectTimeoutException('Connection timed out', $request)
+            : new ConnectException('cURL error 28', $request, null, ['errno' => 28]));
 
         $this->expectException(ApiTimeoutException::class);
         $api->requester(['max_network_retries' => 0])->request('GET', '/v1/banks');

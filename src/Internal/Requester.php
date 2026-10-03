@@ -6,6 +6,9 @@ namespace VexPay\Internal;
 
 use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\ConnectTimeoutException;
+use GuzzleHttp\Exception\NetworkTimeoutException;
+use GuzzleHttp\Exception\ResponseTimeoutException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -169,8 +172,8 @@ final class Requester
             }
 
             return $client->sendRequest($request);
-        } catch (ConnectException $exception) {
-            if (($exception->getHandlerContext()['errno'] ?? null) === self::CURLE_OPERATION_TIMEDOUT) {
+        } catch (ClientExceptionInterface $exception) {
+            if (self::isTimeout($exception)) {
                 throw new ApiTimeoutException(
                     sprintf('Request to VEXPay timed out after %ss', $timeout),
                     previous: $exception,
@@ -178,9 +181,21 @@ final class Requester
             }
 
             throw new ApiConnectionException('Could not reach VEXPay: ' . $exception->getMessage(), previous: $exception);
-        } catch (ClientExceptionInterface $exception) {
-            throw new ApiConnectionException('Could not reach VEXPay: ' . $exception->getMessage(), previous: $exception);
         }
+    }
+
+    // Guzzle 8 throws dedicated timeout exceptions; Guzzle 7 only exposes cURL's errno.
+    private static function isTimeout(ClientExceptionInterface $exception): bool
+    {
+        if ($exception instanceof ConnectTimeoutException
+            || $exception instanceof NetworkTimeoutException
+            || $exception instanceof ResponseTimeoutException) {
+            return true;
+        }
+
+        return $exception instanceof ConnectException
+            && method_exists($exception, 'getHandlerContext')
+            && ($exception->getHandlerContext()['errno'] ?? null) === self::CURLE_OPERATION_TIMEDOUT;
     }
 
     /**
