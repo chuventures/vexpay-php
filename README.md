@@ -7,15 +7,17 @@ The official PHP library for the [VEXPay](https://vexwallet.co/vexpay) API: acce
 - Safe retries: every `POST` carries an `Idempotency-Key`, so a retried charge never charges twice
 - Auto-pagination
 - Webhook signature verification with replay protection
-- PHP 8.1+, any PSR-18 HTTP client (Guzzle by default), no framework required
+- PHP 8.1+, any PSR-18 HTTP client (Guzzle 7 or 8 by default), no framework required
 
-Using Laravel? Install [`vexpay/laravel`](https://github.com/chuventures/vexpay-laravel) instead — it wraps this SDK with config, a webhook route, events, Eloquent traits, and test fakes.
+Using Laravel? Install [`vexpay/laravel`](https://packagist.org/packages/vexpay/laravel) instead — it wraps this SDK with config, a webhook route, events, Eloquent traits, and test fakes.
 
 ## Install
 
 ```sh
 composer require vexpay/vexpay-php
 ```
+
+Published on [Packagist](https://packagist.org/packages/vexpay/vexpay-php). Releases are listed in the [changelog](CHANGELOG.md).
 
 ## Quickstart
 
@@ -84,6 +86,28 @@ if ($current->status === CheckoutSessionResponseDtoStatus::Paid) {
 ```
 
 Enum-typed fields hold a backed enum, or the raw string when the API sends a value newer than your SDK version.
+
+## Convert VES to USDT
+
+Turn available VES into your USDT balance. A quote locks the rate (market USDT/VES rate plus your spread) for 60 seconds; accepting it debits the VES at once and returns a `PENDING` conversion. VEXPay then delivers the USDT and sends `conversion.completed` (or `conversion.canceled`, with the VES returned). Conversions must be enabled on your account — otherwise the calls fail with `conversions_not_enabled` (403). In test mode they complete immediately.
+
+```php
+use VexPay\VexPayClient;
+
+$vexpay = new VexPayClient(getenv('VEXPAY_API_KEY'));
+
+$quote = $vexpay->conversions->quotes->create(['sourceAmountVes' => '10000.00']); // or ['targetAmountUsdt' => '50.00']
+
+$conversion = $vexpay->conversions->create(
+    ['quoteId' => $quote->id, 'reference' => 'treasury-2026-10-03'],
+    ['idempotency_key' => 'convert-2026-10-03'],
+);
+
+foreach ($vexpay->conversions->list(['status' => 'PENDING']) as $c) {
+    echo $c->id, ' ', $c->sourceAmountVes, ' → ', $c->targetAmountUsdt, PHP_EOL;
+}
+$vexpay->conversions->cancel($conversion->id); // only while PENDING
+```
 
 ## Webhooks
 
@@ -253,6 +277,8 @@ Using Laravel? `VexPay::fake()` in `vexpay/laravel` wraps this with Laravel-styl
 | `crypto->depositAddresses` | `create` |
 | `crypto->networks` | `list` |
 | `crypto->payouts` | `create`, `retrieve` |
+| `conversions` | `create`, `list`, `retrieve`, `cancel` |
+| `conversions->quotes` | `create` |
 | `merchants` | `create`, `list`, `retrieve`, `retrieveByRef`, `update`, `delete`, `retrieveBalance`, `transfer`, `listAuditEvents`, `startVerification`, `confirmVerification` |
 | `merchants->payoutMethods` | `list`, `create`, `setDefault`, `delete`, `startVerification`, `confirmVerification` |
 | `payouts` | `create`, `createInstant`, `createBatch`, `list`, `retrieve`, `retrieveByRef` |

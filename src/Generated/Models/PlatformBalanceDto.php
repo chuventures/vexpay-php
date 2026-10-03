@@ -16,6 +16,10 @@ final class PlatformBalanceDto extends Model
         public readonly string $collectedVes,
         public readonly string $feesVes,
         public readonly string $paidOutVes,
+        /**
+         * Net VES spent on VES→USDT conversions.
+         */
+        public readonly string $convertedVes,
         public readonly string $reserveVes,
         public readonly string $ledgerNetVes,
         /**
@@ -45,6 +49,7 @@ final class PlatformBalanceDto extends Model
             collectedVes: self::required($data, 'collectedVes'),
             feesVes: self::required($data, 'feesVes'),
             paidOutVes: self::required($data, 'paidOutVes'),
+            convertedVes: self::required($data, 'convertedVes'),
             reserveVes: self::required($data, 'reserveVes'),
             ledgerNetVes: self::required($data, 'ledgerNetVes'),
             availableVes: self::required($data, 'availableVes'),

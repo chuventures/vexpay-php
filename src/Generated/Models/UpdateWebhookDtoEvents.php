@@ -27,6 +27,8 @@ enum UpdateWebhookDtoEvents: string
     case MerchantWalletCredit = 'merchant.wallet_credit';
     case PayoutCompleted = 'payout.completed';
     case PayoutFailed = 'payout.failed';
+    case ConversionCompleted = 'conversion.completed';
+    case ConversionCanceled = 'conversion.canceled';
     case TenantStatusChanged = 'tenant.status_changed';
     case TenantApiKeyCreated = 'tenant.api_key.created';
     case TenantApiKeyRotated = 'tenant.api_key.rotated';

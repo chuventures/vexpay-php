@@ -9,6 +9,7 @@ use VexPay\Internal\Requester;
 use VexPay\Resource\Balance;
 use VexPay\Resource\Banks;
 use VexPay\Resource\Checkout;
+use VexPay\Resource\Conversions;
 use VexPay\Resource\Crypto;
 use VexPay\Resource\Merchants;
 use VexPay\Resource\PaymentLinks;
@@ -42,6 +43,8 @@ final class VexPayClient
     public readonly Payouts $payouts;
     /** Stablecoins (USDT, USDC): deposit addresses, balances, networks and payouts. */
     public readonly Crypto $crypto;
+    /** Convert available VES to USDT (enabled per account). */
+    public readonly Conversions $conversions;
     public readonly Products $products;
     public readonly PaymentLinks $paymentLinks;
     public readonly TenantPayoutAccount $tenantPayoutAccount;
@@ -65,6 +68,7 @@ final class VexPayClient
         $this->merchants = new Merchants($this->requester);
         $this->payouts = new Payouts($this->requester);
         $this->crypto = new Crypto($this->requester);
+        $this->conversions = new Conversions($this->requester);
         $this->products = new Products($this->requester);
         $this->paymentLinks = new PaymentLinks($this->requester);
         $this->tenantPayoutAccount = new TenantPayoutAccount($this->requester);
@@ -109,6 +113,11 @@ final class VexPayClient
     public function crypto(): Crypto
     {
         return $this->crypto;
+    }
+
+    public function conversions(): Conversions
+    {
+        return $this->conversions;
     }
 
     public function products(): Products
