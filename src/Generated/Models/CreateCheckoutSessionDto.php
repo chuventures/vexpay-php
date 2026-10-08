@@ -39,7 +39,7 @@ final class CreateCheckoutSessionDto extends Model
          */
         public readonly ?array $allowedOrigins = null,
         /**
-         * Payment methods offered. Defaults to every method your account can accept.
+         * Payment methods offered. Defaults to every method your account can accept. `cop` (Colombian pesos: Bre-B, Nequi, Daviplata) needs the COP method on your account.
          *
          * @var list<CreateCheckoutSessionDtoMethods|string>|null
          */

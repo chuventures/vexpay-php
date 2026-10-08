@@ -12,4 +12,5 @@ enum CheckoutSessionResponseDtoMethods: string
     case Vpos = 'vpos';
     case Usdt = 'usdt';
     case Usdc = 'usdc';
+    case Cop = 'cop';
 }
