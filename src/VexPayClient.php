@@ -10,6 +10,7 @@ use VexPay\Resource\Balance;
 use VexPay\Resource\Banks;
 use VexPay\Resource\Checkout;
 use VexPay\Resource\Conversions;
+use VexPay\Resource\Cop;
 use VexPay\Resource\Crypto;
 use VexPay\Resource\Merchants;
 use VexPay\Resource\PaymentLinks;
@@ -45,6 +46,8 @@ final class VexPayClient
     public readonly Crypto $crypto;
     /** Convert available VES to USDT (enabled per account). */
     public readonly Conversions $conversions;
+    /** Colombian pesos: Bre-B, Nequi and Daviplata payments and the COP balance. */
+    public readonly Cop $cop;
     public readonly Products $products;
     public readonly PaymentLinks $paymentLinks;
     public readonly TenantPayoutAccount $tenantPayoutAccount;
@@ -69,6 +72,7 @@ final class VexPayClient
         $this->payouts = new Payouts($this->requester);
         $this->crypto = new Crypto($this->requester);
         $this->conversions = new Conversions($this->requester);
+        $this->cop = new Cop($this->requester);
         $this->products = new Products($this->requester);
         $this->paymentLinks = new PaymentLinks($this->requester);
         $this->tenantPayoutAccount = new TenantPayoutAccount($this->requester);
@@ -118,6 +122,11 @@ final class VexPayClient
     public function conversions(): Conversions
     {
         return $this->conversions;
+    }
+
+    public function cop(): Cop
+    {
+        return $this->cop;
     }
 
     public function products(): Products

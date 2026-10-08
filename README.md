@@ -87,6 +87,45 @@ if ($current->status === CheckoutSessionResponseDtoStatus::Paid) {
 
 Enum-typed fields hold a backed enum, or the raw string when the API sends a value newer than your SDK version.
 
+The hosted page lets the buyer pick the currency — bolívares, stablecoins or Colombian pesos — and offers every method your account accepts. Limit it with `methods` (`c2p`, `vpos`, `usdt`, `usdc`, `cop`).
+
+## Colombian pesos (COP)
+
+Collect pesos from buyers in Colombia through Bre-B, Nequi or Daviplata. Amounts are whole pesos, payments complete asynchronously (`payment.completed` / `payment.failed`), and completed payments go to your COP balance net of the COP fee. COP must be enabled on your account — otherwise the calls fail with `method_not_allowed` (403).
+
+```php
+use VexPay\VexPayClient;
+
+$vexpay = new VexPayClient(getenv('VEXPAY_API_KEY'));
+
+// Bre-B: no buyer data. Show next->qrPngBase64 as an image and next->transferKey as text.
+$breb = $vexpay->cop->payments->create(
+    ['amountCop' => 100000, 'channel' => 'breb', 'reference' => 'order-1042'],
+    ['idempotency_key' => 'order-1042-cop'],
+);
+
+$buyer = ['email' => 'juan@example.com', 'phone' => '3001234567', 'documentType' => 'CC', 'documentNumber' => '1234567890'];
+
+// Nequi: the buyer approves a push in the Nequi app.
+$vexpay->cop->payments->create(['amountCop' => 50000, 'channel' => 'nequi', 'buyer' => $buyer]);
+
+// Daviplata: the buyer reads you the SMS code; submit it.
+$davi = $vexpay->cop->payments->create(['amountCop' => 50000, 'channel' => 'daviplata', 'buyer' => $buyer]);
+$vexpay->cop->payments->submitOtp($davi->id, ['otp' => '123456']);
+
+$available = $vexpay->cop->balance->retrieve()->availableCop;
+```
+
+`cancel($id)` cancels a pending payment and `refund($id)` refunds a completed one in full within 96 hours. A webhook for a COP payment has `method` `COP`, with `channel`, `amountCop` and a lowercase `status`.
+
+**Test mode** (test API keys use a sandbox):
+
+| Channel | What to use | Result |
+|---|---|---|
+| Bre-B | No buyer data | QR and key from the sandbox. **Never send real money to them** — sandbox keys are reachable from real banks and the money is not credited. |
+| Nequi | Any valid data, e.g. phone `3001234567`, `CC` `1234567890`, any email | Completes on its own within about a minute |
+| Daviplata | Same buyer data (`CC`, `CE` or `TI` only) | OTP `123456`, `000000` or `111111` completes it; any other code fails with `invalid_otp` |
+
 ## Convert VES to USDT
 
 Turn available VES into your USDT balance. A quote locks the rate (market USDT/VES rate plus your spread) for 60 seconds; accepting it debits the VES at once and returns a `PENDING` conversion. VEXPay then delivers the USDT and sends `conversion.completed` (or `conversion.canceled`, with the VES returned). Conversions are on for every account that has USDT enabled — otherwise the calls fail with `conversions_not_enabled` (403). In test mode they complete immediately.
@@ -279,6 +318,8 @@ Using Laravel? `VexPay::fake()` in `vexpay/laravel` wraps this with Laravel-styl
 | `crypto->payouts` | `create`, `retrieve` |
 | `conversions` | `create`, `list`, `retrieve`, `cancel` |
 | `conversions->quotes` | `create` |
+| `cop->payments` | `create`, `retrieve`, `submitOtp`, `cancel`, `refund` |
+| `cop->balance` | `retrieve` |
 | `merchants` | `create`, `list`, `retrieve`, `retrieveByRef`, `update`, `delete`, `retrieveBalance`, `transfer`, `listAuditEvents`, `startVerification`, `confirmVerification` |
 | `merchants->payoutMethods` | `list`, `create`, `setDefault`, `delete`, `startVerification`, `confirmVerification` |
 | `payouts` | `create`, `createInstant`, `createBatch`, `list`, `retrieve`, `retrieveByRef` |
