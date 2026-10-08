@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+- Add `balance->transactions->list()`: every movement in your VES balance (payments, fees, payouts, reversals, card chargebacks, adjustments, seller transfers, conversions), newest first; iterate the page for every movement. The amounts sum to `ledgerNetVes` from `balance->retrieve()`, so your ledger can reconcile automatically.
+- New webhook events `payment.chargeback` and `payment.chargeback_closed` for bank chargebacks on card payments, with `ledgerEntryIds` matching `balance->transactions`. `payment.reversed` adds `reversalType` (`reversal` | `chargeback`); the balance adds `chargebackFeesVes`.
+
 ## 0.2.0
 
 - Add `conversions` to turn available VES into your USDT balance: `conversions->quotes->create()` locks a rate for 60 seconds (`sourceAmountVes` or `targetAmountUsdt`), `conversions->create(['quoteId' => …])` debits the VES and returns a `PENDING` conversion, plus `conversions->retrieve()`, `conversions->list()` (auto-paginating) and `conversions->cancel()`. New webhook events `conversion.completed` and `conversion.canceled`; the VES balance adds `convertedVes`. Conversions are enabled per account (403 `conversions_not_enabled` otherwise).

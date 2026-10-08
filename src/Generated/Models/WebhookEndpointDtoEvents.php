@@ -13,6 +13,8 @@ enum WebhookEndpointDtoEvents: string
     case PaymentFailed = 'payment.failed';
     case PaymentCanceled = 'payment.canceled';
     case PaymentReversed = 'payment.reversed';
+    case PaymentChargeback = 'payment.chargeback';
+    case PaymentChargebackClosed = 'payment.chargeback_closed';
     case MerchantVerified = 'merchant.verified';
     case MerchantRejected = 'merchant.rejected';
     case MerchantDeactivated = 'merchant.deactivated';

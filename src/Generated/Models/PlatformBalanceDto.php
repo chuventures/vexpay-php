@@ -20,6 +20,10 @@ final class PlatformBalanceDto extends Model
          * Net VES spent on VES→USDT conversions.
          */
         public readonly string $convertedVes,
+        /**
+         * Net card chargeback fees charged (fees minus fees returned on won disputes).
+         */
+        public readonly string $chargebackFeesVes,
         public readonly string $reserveVes,
         public readonly string $ledgerNetVes,
         /**
@@ -50,6 +54,7 @@ final class PlatformBalanceDto extends Model
             feesVes: self::required($data, 'feesVes'),
             paidOutVes: self::required($data, 'paidOutVes'),
             convertedVes: self::required($data, 'convertedVes'),
+            chargebackFeesVes: self::required($data, 'chargebackFeesVes'),
             reserveVes: self::required($data, 'reserveVes'),
             ledgerNetVes: self::required($data, 'ledgerNetVes'),
             availableVes: self::required($data, 'availableVes'),

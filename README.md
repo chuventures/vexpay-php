@@ -89,7 +89,7 @@ Enum-typed fields hold a backed enum, or the raw string when the API sends a val
 
 ## Convert VES to USDT
 
-Turn available VES into your USDT balance. A quote locks the rate (market USDT/VES rate plus your spread) for 60 seconds; accepting it debits the VES at once and returns a `PENDING` conversion. VEXPay then delivers the USDT and sends `conversion.completed` (or `conversion.canceled`, with the VES returned). Conversions must be enabled on your account — otherwise the calls fail with `conversions_not_enabled` (403). In test mode they complete immediately.
+Turn available VES into your USDT balance. A quote locks the rate (market USDT/VES rate plus your spread) for 60 seconds; accepting it debits the VES at once and returns a `PENDING` conversion. VEXPay then delivers the USDT and sends `conversion.completed` (or `conversion.canceled`, with the VES returned). Conversions are on for every account that has USDT enabled — otherwise the calls fail with `conversions_not_enabled` (403). In test mode they complete immediately.
 
 ```php
 use VexPay\VexPayClient;

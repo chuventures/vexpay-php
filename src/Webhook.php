@@ -22,6 +22,8 @@ final class Webhook
         'payment.failed',
         'payment.canceled',
         'payment.reversed',
+        'payment.chargeback',
+        'payment.chargeback_closed',
         'merchant.verified',
         'merchant.rejected',
         'merchant.deactivated',
