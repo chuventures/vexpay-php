@@ -11,7 +11,6 @@ use VexPay\Model;
 final class C2pPaymentDto extends Model
 {
     public function __construct(
-        public readonly float $usdAmount,
         public readonly string $debtorId,
         public readonly string $debtorCellPhone,
         /**
@@ -26,6 +25,14 @@ final class C2pPaymentDto extends Model
          * Pending intent returned by POST /v1/payments/c2p/request.
          */
         public readonly ?string $intentId = null,
+        /**
+         * USD amount. Required unless vesAmount or intentId is set. When only usdAmount is set, VES is derived at the live BCV rate.
+         */
+        public readonly ?float $usdAmount = null,
+        /**
+         * VES amount debited at the bank. When set, locks the bolívar charge and derives USD at BCV (it wins over usdAmount). With intentId the amount locked on the intent is charged; amounts sent here must match it (±0.01 Bs / ±$0.01).
+         */
+        public readonly ?float $vesAmount = null,
         /**
          * Correlation value; not an idempotency key.
          */
@@ -51,12 +58,13 @@ final class C2pPaymentDto extends Model
     public static function fromArray(array $data): static
     {
         return (new self(
-            usdAmount: self::required($data, 'usdAmount'),
             debtorId: self::required($data, 'debtorId'),
             debtorCellPhone: self::required($data, 'debtorCellPhone'),
             debtorBankCode: self::required($data, 'debtorBankCode'),
             token: self::required($data, 'token'),
             intentId: $data['intentId'] ?? null,
+            usdAmount: $data['usdAmount'] ?? null,
+            vesAmount: $data['vesAmount'] ?? null,
             externalRef: $data['externalRef'] ?? null,
             merchantId: $data['merchantId'] ?? null,
             applicationFeeVes: $data['applicationFeeVes'] ?? null,

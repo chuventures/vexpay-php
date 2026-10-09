@@ -39,7 +39,7 @@ final class CreateCheckoutSessionDto extends Model
          */
         public readonly ?array $allowedOrigins = null,
         /**
-         * Payment methods offered. Defaults to every method your account can accept. `cop` (Colombian pesos: Bre-B, Nequi, Daviplata) needs the COP method on your account.
+         * Payment methods offered. Defaults to every method your account can accept. `c2p` is the bank pull shown as Débito Inmediato; `pago_movil` is a Pago Móvil the buyer sends from their bank app (needs Pago Móvil enabled on your account). `cop` (Colombian pesos: Bre-B, Nequi, Daviplata) needs the COP method on your account.
          *
          * @var list<CreateCheckoutSessionDtoMethods|string>|null
          */

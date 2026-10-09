@@ -40,6 +40,16 @@ final class Payments extends AbstractResource
     }
 
     /**
+     * Bolívar methods your account can take now (`pago_movil`, `c2p`, `vpos`), with a reason when unavailable.
+     *
+     * @param array<string, mixed> $options
+     */
+    public function methods(array $options = []): M\PaymentMethodsResponseDto
+    {
+        return $this->model('Payments_listPaymentMethods', M\PaymentMethodsResponseDto::class, options: $options);
+    }
+
+    /**
      * @param array<string, mixed> $options
      */
     public function retrieve(string $id, array $options = []): M\PaymentReceiptDto

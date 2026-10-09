@@ -63,6 +63,7 @@ final class Routes
         'Payments_getPayment' => ['GET', '/v1/payments/{id}', 'PaymentReceiptDto'],
         'Payments_getPaymentByRef' => ['GET', '/v1/payments/by-ref/{externalRef}', 'PaymentReceiptDto'],
         'Payments_getQuote' => ['GET', '/v1/quote', 'QuoteResponseDto'],
+        'Payments_listPaymentMethods' => ['GET', '/v1/payment-methods', 'PaymentMethodsResponseDto'],
         'Payments_requestC2p' => ['POST', '/v1/payments/c2p/request', 'C2pIntentResponseDto'],
         'Payments_reversePayment' => ['POST', '/v1/payments/{id}/reverse', 'PaymentReceiptDto'],
         'Payments_verifyPagoMovil' => ['POST', '/v1/payments/pago-movil/verify', 'PaymentReceiptDto'],

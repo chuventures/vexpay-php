@@ -9,6 +9,7 @@ namespace VexPay\Generated\Models;
 enum CreateCheckoutSessionDtoMethods: string
 {
     case C2p = 'c2p';
+    case PagoMovil = 'pago_movil';
     case Vpos = 'vpos';
     case Usdt = 'usdt';
     case Usdc = 'usdc';
