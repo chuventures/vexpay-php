@@ -38,6 +38,7 @@ final class Webhook
         'merchant.wallet_credit',
         'payout.completed',
         'payout.failed',
+        'conversion.created',
         'conversion.completed',
         'conversion.canceled',
         'tenant.status_changed',

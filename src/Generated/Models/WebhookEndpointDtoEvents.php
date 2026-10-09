@@ -29,6 +29,7 @@ enum WebhookEndpointDtoEvents: string
     case MerchantWalletCredit = 'merchant.wallet_credit';
     case PayoutCompleted = 'payout.completed';
     case PayoutFailed = 'payout.failed';
+    case ConversionCreated = 'conversion.created';
     case ConversionCompleted = 'conversion.completed';
     case ConversionCanceled = 'conversion.canceled';
     case TenantStatusChanged = 'tenant.status_changed';

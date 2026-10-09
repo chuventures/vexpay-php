@@ -8,19 +8,23 @@ use VexPay\Generated\Models as M;
 use VexPay\Internal\Requester;
 use VexPay\Pagination\CursorPage;
 use VexPay\Resource\Conversions\Quotes;
+use VexPay\Resource\Conversions\Settings;
 
 /**
- * Convert available VES into your USDT balance (enabled per account). Accepting a quote debits the
- * VES at once; the conversion is `PENDING` until VEXPay delivers the USDT (`conversion.completed`).
+ * Convert available VES or COP into your USDT balance (enabled per account). Accepting a quote debits
+ * the source at once (`conversion.created`); the conversion is `PENDING` until VEXPay delivers the USDT
+ * (`conversion.completed`).
  */
 final class Conversions extends AbstractResource
 {
     public readonly Quotes $quotes;
+    public readonly Settings $settings;
 
     public function __construct(Requester $requester)
     {
         parent::__construct($requester);
         $this->quotes = new Quotes($requester);
+        $this->settings = new Settings($requester);
     }
 
     /**
@@ -54,7 +58,7 @@ final class Conversions extends AbstractResource
     }
 
     /**
-     * Cancel a `PENDING` conversion; the VES returns to your available balance.
+     * Cancel a `PENDING` conversion; the VES or COP returns to your available balance.
      *
      * @param array<string, mixed> $options
      */

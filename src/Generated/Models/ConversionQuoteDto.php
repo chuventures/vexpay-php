@@ -14,11 +14,11 @@ final class ConversionQuoteDto extends Model
         public readonly string $id,
         public readonly string $object,
         /**
-         * VES per 1 USDT you get: market rate plus your spread.
+         * Units of `sourceCurrency` per 1 USDT you get: market rate plus your spread.
          */
         public readonly string $rate,
         /**
-         * Market USDT/VES rate the quote is based on.
+         * Market USDT rate (in `sourceCurrency`) the quote is based on.
          */
         public readonly string $marketRate,
         /**
@@ -26,7 +26,11 @@ final class ConversionQuoteDto extends Model
          */
         public readonly string $spreadPercent,
         public readonly ConversionQuoteDtoRateSource|string $rateSource,
-        public readonly string $sourceAmountVes,
+        public readonly ConversionQuoteDtoSourceCurrency|string $sourceCurrency,
+        /**
+         * Amount debited (VES to the cent, COP in whole pesos; rounded up).
+         */
+        public readonly string $sourceAmount,
         /**
          * Rounded down to the cent.
          */
@@ -36,6 +40,10 @@ final class ConversionQuoteDto extends Model
          */
         public readonly string $expiresAt,
         public readonly string $createdAt,
+        /**
+         * VES quotes only; `null` for COP.
+         */
+        public readonly ?string $sourceAmountVes = null,
     ) {
     }
 
@@ -51,10 +59,12 @@ final class ConversionQuoteDto extends Model
             marketRate: self::required($data, 'marketRate'),
             spreadPercent: self::required($data, 'spreadPercent'),
             rateSource: self::enumOrRaw(ConversionQuoteDtoRateSource::class, self::required($data, 'rateSource')),
-            sourceAmountVes: self::required($data, 'sourceAmountVes'),
+            sourceCurrency: self::enumOrRaw(ConversionQuoteDtoSourceCurrency::class, self::required($data, 'sourceCurrency')),
+            sourceAmount: self::required($data, 'sourceAmount'),
             targetAmountUsdt: self::required($data, 'targetAmountUsdt'),
             expiresAt: self::required($data, 'expiresAt'),
             createdAt: self::required($data, 'createdAt'),
+            sourceAmountVes: $data['sourceAmountVes'] ?? null,
         ))->withRaw($data);
     }
 }

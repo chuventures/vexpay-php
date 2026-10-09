@@ -13,7 +13,8 @@ final class ConversionsTest extends TestCase
     private const CONVERSION = [
         'id' => 'c0a8f6a2-1111-4b7e-9a51-0f4a1e9a0001', 'object' => 'conversion', 'status' => 'PENDING', 'reference' => null,
         'rate' => '998.8299', 'marketRate' => '979.2450', 'spreadPercent' => '2.0000', 'rateSource' => 'market',
-        'sourceAmountVes' => '10000.00', 'targetAmountUsdt' => '10.01', 'createdAt' => '2026-10-03T00:00:00.000Z',
+        'sourceCurrency' => 'VES', 'sourceAmount' => '10000.00', 'sourceAmountVes' => '10000.00', 'targetAmountUsdt' => '10.01',
+        'origin' => 'api', 'paymentId' => null, 'createdAt' => '2026-10-03T00:00:00.000Z',
         'completedAt' => null, 'canceledAt' => null, 'cancelReason' => null,
     ];
 
@@ -22,8 +23,8 @@ final class ConversionsTest extends TestCase
         $api = (new MockApi())
             ->reply(201, [
                 'id' => 'q1', 'object' => 'conversion_quote', 'rate' => '998.8299', 'marketRate' => '979.2450',
-                'spreadPercent' => '2.0000', 'rateSource' => 'market', 'sourceAmountVes' => '10000.00',
-                'targetAmountUsdt' => '10.01', 'expiresAt' => '2026-10-03T00:01:00.000Z', 'createdAt' => '2026-10-03T00:00:00.000Z',
+                'spreadPercent' => '2.0000', 'rateSource' => 'market', 'sourceCurrency' => 'VES', 'sourceAmount' => '10000.00',
+                'sourceAmountVes' => '10000.00', 'targetAmountUsdt' => '10.01', 'expiresAt' => '2026-10-03T00:01:00.000Z', 'createdAt' => '2026-10-03T00:00:00.000Z',
             ])
             ->reply(201, self::CONVERSION)
             ->reply(200, ['items' => [self::CONVERSION], 'nextCursor' => null])
@@ -49,5 +50,36 @@ final class ConversionsTest extends TestCase
         $canceled = $vexpay->conversions->cancel(self::CONVERSION['id']);
         self::assertSame('/v1/conversions/' . self::CONVERSION['id'] . '/cancel', $api->request(3)->getUri()->getPath());
         self::assertSame('canceled_by_tenant', $canceled->cancelReason);
+    }
+
+    public function testCopQuoteAndSettings(): void
+    {
+        $settings = [
+            'object' => 'conversion_settings', 'enabled' => true, 'sourceCurrencies' => ['VES' => true, 'COP' => true],
+            'spreadPercent' => ['VES' => '3.0000', 'COP' => '3.0000'], 'minimumUsdt' => '10.00',
+            'dailyMax' => ['VES' => null, 'COP' => null], 'autoConvert' => ['COP' => ['percent' => 50]],
+        ];
+        $api = (new MockApi())
+            ->reply(201, [
+                'id' => 'q2', 'object' => 'conversion_quote', 'rate' => '4037.6000', 'marketRate' => '3920.0000',
+                'spreadPercent' => '3.0000', 'rateSource' => 'market', 'sourceCurrency' => 'COP', 'sourceAmount' => '1000000',
+                'sourceAmountVes' => null, 'targetAmountUsdt' => '247.67', 'expiresAt' => '2026-10-09T00:01:00.000Z',
+                'createdAt' => '2026-10-09T00:00:00.000Z',
+            ])
+            ->reply(200, $settings)
+            ->reply(200, $settings);
+        $vexpay = $api->client();
+
+        $quote = $vexpay->conversions->quotes->create(['sourceCurrency' => 'COP', 'sourceAmount' => '1000000']);
+        self::assertSame('1000000', $quote->sourceAmount);
+        self::assertNull($quote->sourceAmountVes);
+
+        $read = $vexpay->conversions->settings->retrieve();
+        self::assertSame(50, $read->autoConvert->COP->percent);
+        self::assertSame('/v1/conversions/settings', $api->request(1)->getUri()->getPath());
+
+        $vexpay->conversions->settings->update(['autoConvert' => ['COP' => ['percent' => 50]]]);
+        self::assertSame('PATCH', $api->request(2)->getMethod());
+        self::assertSame(['autoConvert' => ['COP' => ['percent' => 50]]], json_decode((string) $api->request(2)->getBody(), true));
     }
 }

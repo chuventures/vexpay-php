@@ -17,6 +17,8 @@ final class Routes
         'Balance_listTransactions' => ['GET', '/v1/balance/transactions', 'BalanceTransactionListDto'],
         'CheckoutSessions_create' => ['POST', '/v1/checkout/sessions', 'CheckoutSessionResponseDto'],
         'CheckoutSessions_retrieve' => ['GET', '/v1/checkout/sessions/{id}', 'CheckoutSessionResponseDto'],
+        'ConversionSettings_get' => ['GET', '/v1/conversions/settings', 'ConversionSettingsDto'],
+        'ConversionSettings_update' => ['PATCH', '/v1/conversions/settings', 'ConversionSettingsDto'],
         'Conversions_cancel' => ['POST', '/v1/conversions/{id}/cancel', 'ConversionDto'],
         'Conversions_create' => ['POST', '/v1/conversions', 'ConversionDto'],
         'Conversions_createQuote' => ['POST', '/v1/conversions/quotes', 'ConversionQuoteDto'],

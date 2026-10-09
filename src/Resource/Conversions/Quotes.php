@@ -8,12 +8,13 @@ use VexPay\Generated\Models as M;
 use VexPay\Resource\AbstractResource;
 
 /**
- * A rate for converting VES to USDT, locked for 60 seconds.
+ * A rate for converting VES or COP to USDT, locked for 60 seconds.
  */
 final class Quotes extends AbstractResource
 {
     /**
-     * Send `sourceAmountVes` (VES to spend) or `targetAmountUsdt` (USDT to receive) — exactly one.
+     * `sourceCurrency` is `VES` (default) or `COP`. Send `sourceAmount` (to spend; COP in whole pesos) or
+     * `targetAmountUsdt` (USDT to receive) — exactly one. VES may still use `sourceAmountVes`.
      *
      * @param array<string, mixed> $params
      * @param array<string, mixed> $options
