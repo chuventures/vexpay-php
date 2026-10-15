@@ -30,6 +30,10 @@ final class PagoMovilVerifyDto extends Model
          * Payer Pago Móvil phone (11-digit local, e.g. 04149333844). Required by some receiving banks when txType is pago_movil — send it whenever you have it.
          */
         public readonly ?string $debtorCellPhone = null,
+        /**
+         * Convert this payment's net VES to USDT once it completes and send it to this wallet. Needs USDT and conversions enabled; not allowed with merchantId. See the "Pay in bolívars, receive USDT" guide.
+         */
+        public readonly ?OnwardPayoutDto $onwardPayout = null,
     ) {
     }
 
@@ -46,6 +50,7 @@ final class PagoMovilVerifyDto extends Model
             debtorBankCode: $data['debtorBankCode'] ?? null,
             txType: isset($data['txType']) ? self::enumOrRaw(PagoMovilVerifyDtoTxType::class, $data['txType']) : null,
             debtorCellPhone: $data['debtorCellPhone'] ?? null,
+            onwardPayout: isset($data['onwardPayout']) ? OnwardPayoutDto::fromArray($data['onwardPayout']) : null,
         ))->withRaw($data);
     }
 }

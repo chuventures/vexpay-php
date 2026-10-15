@@ -16,6 +16,9 @@ final class C2pIntentResponseDto extends Model
         public readonly C2pIntentResponseDtoMethod|string $method,
         public readonly float $usdAmount,
         public readonly float $vesAmount,
+        /**
+         * Official BCV rate (Bs per $1) when the payment was created. Reference only; see `rate`.
+         */
         public readonly float $bcvRate,
         public readonly string $tenantName,
         public readonly string $createdAt,
@@ -31,6 +34,14 @@ final class C2pIntentResponseDto extends Model
          * Tenant correlation value; not an idempotency key.
          */
         public readonly ?string $externalRef = null,
+        /**
+         * Rate (Bs per $1) this payment was priced at: equal to `bcvRate` for BCV tenants, the market rate for MARKET tenants.
+         */
+        public readonly ?float $rate = null,
+        /**
+         * Source of `rate`: the account's Bolívar rate setting when the payment was created.
+         */
+        public readonly C2pIntentResponseDtoRateSource|string|null $rateSource = null,
         /**
          * Platform service fee, USD. Clamped 0..usdAmount.
          */
@@ -61,6 +72,10 @@ final class C2pIntentResponseDto extends Model
         public readonly ?string $reversedAt = null,
         public readonly ?string $reversalRef = null,
         public readonly ?float $reversalTxId = null,
+        /**
+         * Present when the pay-in was sent with `onwardPayout`.
+         */
+        public readonly ?OnwardPayoutStatusDto $onwardPayout = null,
     ) {
     }
 
@@ -81,6 +96,8 @@ final class C2pIntentResponseDto extends Model
             intentId: self::required($data, 'intentId'),
             otpRequested: self::required($data, 'otpRequested'),
             externalRef: $data['externalRef'] ?? null,
+            rate: $data['rate'] ?? null,
+            rateSource: isset($data['rateSource']) ? self::enumOrRaw(C2pIntentResponseDtoRateSource::class, $data['rateSource']) : null,
             feeUsd: $data['feeUsd'] ?? null,
             feeVes: $data['feeVes'] ?? null,
             netVes: $data['netVes'] ?? null,
@@ -99,6 +116,7 @@ final class C2pIntentResponseDto extends Model
             reversedAt: $data['reversedAt'] ?? null,
             reversalRef: $data['reversalRef'] ?? null,
             reversalTxId: $data['reversalTxId'] ?? null,
+            onwardPayout: isset($data['onwardPayout']) ? OnwardPayoutStatusDto::fromArray($data['onwardPayout']) : null,
         ))->withRaw($data);
     }
 }

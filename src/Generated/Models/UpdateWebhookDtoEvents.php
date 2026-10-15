@@ -32,6 +32,7 @@ enum UpdateWebhookDtoEvents: string
     case ConversionCreated = 'conversion.created';
     case ConversionCompleted = 'conversion.completed';
     case ConversionCanceled = 'conversion.canceled';
+    case OnwardPayoutUpdated = 'onward_payout.updated';
     case TenantStatusChanged = 'tenant.status_changed';
     case TenantApiKeyCreated = 'tenant.api_key.created';
     case TenantApiKeyRotated = 'tenant.api_key.rotated';

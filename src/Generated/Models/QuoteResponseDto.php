@@ -13,9 +13,12 @@ final class QuoteResponseDto extends Model
     public function __construct(
         public readonly float $usdAmount,
         /**
-         * Authoritative VEX FX BCV rate used for payment settlement
+         * Official VEX FX BCV rate (Bs per $1).
          */
         public readonly float $bcvRate,
+        /**
+         * usdAmount × rate, rounded to the cent: what a payment created now would charge.
+         */
         public readonly float $vesAmount,
         /**
          * Median of available BCV sources (VEX FX + bank)
@@ -33,6 +36,14 @@ final class QuoteResponseDto extends Model
          * @var array<string, mixed>
          */
         public readonly array $sources,
+        /**
+         * Rate your payments are priced at (Bs per $1): `bcvRate` for BCV accounts, the market rate for MARKET accounts.
+         */
+        public readonly ?float $rate = null,
+        /**
+         * Your account's Bolívar rate setting.
+         */
+        public readonly QuoteResponseDtoRateSource|string|null $rateSource = null,
     ) {
     }
 
@@ -50,6 +61,8 @@ final class QuoteResponseDto extends Model
             source: self::required($data, 'source'),
             fetchedAt: self::required($data, 'fetchedAt'),
             sources: self::required($data, 'sources'),
+            rate: $data['rate'] ?? null,
+            rateSource: isset($data['rateSource']) ? self::enumOrRaw(QuoteResponseDtoRateSource::class, $data['rateSource']) : null,
         ))->withRaw($data);
     }
 }

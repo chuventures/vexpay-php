@@ -41,6 +41,7 @@ final class Webhook
         'conversion.created',
         'conversion.completed',
         'conversion.canceled',
+        'onward_payout.updated',
         'tenant.status_changed',
         'tenant.api_key.created',
         'tenant.api_key.rotated',

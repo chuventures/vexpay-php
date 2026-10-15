@@ -29,11 +29,11 @@ final class VposPaymentDto extends Model
          */
         public readonly float $cardType,
         /**
-         * USD amount. Required unless vesAmount is set. When only usdAmount is set, VES is derived at the live BCV rate.
+         * USD amount. Required unless vesAmount is set. When only usdAmount is set, VES is derived at your Bolívar rate (live BCV, or market if you chose it).
          */
         public readonly ?float $usdAmount = null,
         /**
-         * VES amount charged at the bank. When set, locks the bolívar charge and derives USD at BCV — use this to avoid USD↔VES 2-decimal round-trip drift (e.g. Bs. 50 → $0.07 → Bs. 52.86).
+         * VES amount charged at the bank. When set, locks the bolívar charge and derives USD at your Bolívar rate — use this to avoid USD↔VES 2-decimal round-trip drift (e.g. Bs. 50 → $0.07 → Bs. 52.86).
          */
         public readonly ?float $vesAmount = null,
         /**
@@ -44,6 +44,10 @@ final class VposPaymentDto extends Model
          * Correlation value; not an idempotency key.
          */
         public readonly ?string $externalRef = null,
+        /**
+         * Who the funds are for when that is not a merchant (e.g. the wallet user being topped up). Shown to ops only; does not affect settlement.
+         */
+        public readonly ?string $beneficiary = null,
         public readonly ?string $merchantId = null,
         /**
          * Marketplace application fee in VES retained by the platform.
@@ -74,6 +78,7 @@ final class VposPaymentDto extends Model
             vesAmount: $data['vesAmount'] ?? null,
             cardPin: $data['cardPin'] ?? null,
             externalRef: $data['externalRef'] ?? null,
+            beneficiary: $data['beneficiary'] ?? null,
             merchantId: $data['merchantId'] ?? null,
             applicationFeeVes: $data['applicationFeeVes'] ?? null,
             applicationFeePercent: $data['applicationFeePercent'] ?? null,

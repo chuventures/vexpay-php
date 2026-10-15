@@ -23,6 +23,10 @@ final class PaymentWebhookData
         public readonly ?float $usdAmount,
         public readonly ?float $vesAmount,
         public readonly ?float $bcvRate,
+        /** Rate the payment was priced at: bcvRate for BCV accounts, the market rate for MARKET accounts. */
+        public readonly ?float $rate,
+        /** BCV | MARKET */
+        public readonly ?string $rateSource,
         public readonly ?float $feeUsd,
         public readonly ?float $feeVes,
         public readonly ?float $netVes,
@@ -54,6 +58,8 @@ final class PaymentWebhookData
             usdAmount: self::num($data, 'usdAmount'),
             vesAmount: self::num($data, 'vesAmount'),
             bcvRate: self::num($data, 'bcvRate'),
+            rate: self::num($data, 'rate'),
+            rateSource: self::str($data, 'rateSource'),
             feeUsd: self::num($data, 'feeUsd'),
             feeVes: self::num($data, 'feeVes'),
             netVes: self::num($data, 'netVes'),

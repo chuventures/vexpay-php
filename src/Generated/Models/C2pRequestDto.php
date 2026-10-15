@@ -21,11 +21,11 @@ final class C2pRequestDto extends Model
          */
         public readonly float $debtorBankCode,
         /**
-         * USD amount. Required unless vesAmount is set. When only usdAmount is set, VES is derived at the live BCV rate.
+         * USD amount. Required unless vesAmount is set. When only usdAmount is set, VES is derived at your Bolívar rate (live BCV, or market if you chose it).
          */
         public readonly ?float $usdAmount = null,
         /**
-         * VES amount debited at the bank. When set, locks the bolívar charge and derives USD at BCV (it wins over usdAmount). The intent keeps this amount until it is executed.
+         * VES amount debited at the bank. When set, locks the bolívar charge and derives USD at your Bolívar rate (it wins over usdAmount). The intent keeps this amount until it is executed.
          */
         public readonly ?float $vesAmount = null,
         /**
@@ -41,6 +41,10 @@ final class C2pRequestDto extends Model
          * Optional percent of vesAmount used when applicationFeeVes is omitted. When both are omitted and merchantId is set, the merchant's commission (or the tenant default commission) applies.
          */
         public readonly ?float $applicationFeePercent = null,
+        /**
+         * Convert this payment's net VES to USDT once it completes and send it to this wallet. Needs USDT and conversions enabled; not allowed with merchantId. See the "Pay in bolívars, receive USDT" guide.
+         */
+        public readonly ?OnwardPayoutDto $onwardPayout = null,
     ) {
     }
 
@@ -59,6 +63,7 @@ final class C2pRequestDto extends Model
             merchantId: $data['merchantId'] ?? null,
             applicationFeeVes: $data['applicationFeeVes'] ?? null,
             applicationFeePercent: $data['applicationFeePercent'] ?? null,
+            onwardPayout: isset($data['onwardPayout']) ? OnwardPayoutDto::fromArray($data['onwardPayout']) : null,
         ))->withRaw($data);
     }
 }
