@@ -12,7 +12,7 @@ final class CreateCopPaymentDto extends Model
 {
     public function __construct(
         /**
-         * Amount in whole Colombian pesos.
+         * Amount in whole Colombian pesos. At least 2,000 (`amount_below_minimum` otherwise).
          */
         public readonly float $amountCop,
         /**

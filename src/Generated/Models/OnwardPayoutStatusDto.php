@@ -11,6 +11,9 @@ use VexPay\Model;
 final class OnwardPayoutStatusDto extends Model
 {
     public function __construct(
+        /**
+         * `waiting_release`: converted, waiting for the 24h balance hold to end before sending (see `sendAfter`).
+         */
         public readonly OnwardPayoutStatusDtoStatus|string $status,
         public readonly string $network,
         public readonly string $address,
@@ -40,6 +43,10 @@ final class OnwardPayoutStatusDto extends Model
          * Why it is held, failed or canceled.
          */
         public readonly ?string $reason = null,
+        /**
+         * `waiting_release` only: when the converted USDT leaves the balance hold and the payout is sent.
+         */
+        public readonly ?string $sendAfter = null,
     ) {
     }
 
@@ -60,6 +67,7 @@ final class OnwardPayoutStatusDto extends Model
             feeUsdt: $data['feeUsdt'] ?? null,
             txHash: $data['txHash'] ?? null,
             reason: $data['reason'] ?? null,
+            sendAfter: $data['sendAfter'] ?? null,
         ))->withRaw($data);
     }
 }

@@ -10,6 +10,7 @@ enum OnwardPayoutStatusDtoStatus: string
 {
     case Pending = 'pending';
     case Converting = 'converting';
+    case WaitingRelease = 'waiting_release';
     case Sending = 'sending';
     case Completed = 'completed';
     case Held = 'held';

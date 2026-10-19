@@ -22,4 +22,5 @@ enum BalanceTransactionDtoType: string
     case SellerTransferReversal = 'seller_transfer_reversal';
     case Conversion = 'conversion';
     case ConversionReversal = 'conversion_reversal';
+    case MerchantPayoutFee = 'merchant_payout_fee';
 }

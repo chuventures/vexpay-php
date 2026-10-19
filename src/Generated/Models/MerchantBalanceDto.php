@@ -18,6 +18,10 @@ final class MerchantBalanceDto extends Model
         public readonly string $availableVes,
         public readonly string $paidOutVes,
         public readonly string $ledgerNetVes,
+        /**
+         * COP balances from COP sales on seller links. Present only once the seller has COP activity.
+         */
+        public readonly ?MerchantCopBalanceDto $cop = null,
     ) {
     }
 
@@ -34,6 +38,7 @@ final class MerchantBalanceDto extends Model
             availableVes: self::required($data, 'availableVes'),
             paidOutVes: self::required($data, 'paidOutVes'),
             ledgerNetVes: self::required($data, 'ledgerNetVes'),
+            cop: isset($data['cop']) ? MerchantCopBalanceDto::fromArray($data['cop']) : null,
         ))->withRaw($data);
     }
 }

@@ -27,7 +27,7 @@ final class PlatformBalanceDto extends Model
         public readonly string $reserveVes,
         public readonly string $ledgerNetVes,
         /**
-         * Tenant spendable float after reserve (seller obligations already deducted via SELLER_TRANSFER).
+         * What payouts can spend: ledgerNetVes − reserveVes − heldVes (seller obligations already deducted via SELLER_TRANSFER).
          */
         public readonly string $availableVes,
         public readonly string $platformAvailableVes,
@@ -39,6 +39,18 @@ final class PlatformBalanceDto extends Model
         public readonly string $sellerAvailableVes,
         public readonly string $feePercent,
         public readonly string $feeFixedUsd,
+        /**
+         * VES under the 24h balance hold: incoming credits count in `ledgerNetVes` but cannot be paid out until their hold ends. Conversions and seller transfers may still use them.
+         */
+        public readonly ?string $heldVes = null,
+        /**
+         * When the soonest held amount becomes available; null when nothing is held.
+         */
+        public readonly ?string $nextReleaseAt = null,
+        /**
+         * Hours each incoming credit is held before payouts can spend it (0 = no hold). Set by VEXPay.
+         */
+        public readonly ?float $balanceHoldHours = null,
     ) {
     }
 
@@ -64,6 +76,9 @@ final class PlatformBalanceDto extends Model
             sellerAvailableVes: self::required($data, 'sellerAvailableVes'),
             feePercent: self::required($data, 'feePercent'),
             feeFixedUsd: self::required($data, 'feeFixedUsd'),
+            heldVes: $data['heldVes'] ?? null,
+            nextReleaseAt: $data['nextReleaseAt'] ?? null,
+            balanceHoldHours: $data['balanceHoldHours'] ?? null,
         ))->withRaw($data);
     }
 }

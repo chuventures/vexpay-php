@@ -13,7 +13,7 @@ final class CryptoBalanceDto extends Model
     public function __construct(
         public readonly CryptoBalanceDtoCurrency|string $currency,
         /**
-         * Available for payouts, in `currency` (ledger).
+         * Available for payouts, in `currency` (ledger). Excludes `held`.
          */
         public readonly string $available,
         /**
@@ -22,6 +22,14 @@ final class CryptoBalanceDto extends Model
         public readonly string $pendingPayout,
         public readonly string $asOf,
         /**
+         * Under the 24h balance hold: credited but not payable until its hold ends, in `currency`.
+         */
+        public readonly ?string $held = null,
+        /**
+         * When the soonest held amount becomes available; null when nothing is held.
+         */
+        public readonly ?string $nextReleaseAt = null,
+        /**
          * USDT only: same as `available`.
          */
         public readonly ?string $availableUsdt = null,
@@ -29,6 +37,10 @@ final class CryptoBalanceDto extends Model
          * USDT only: same as `pendingPayout`.
          */
         public readonly ?string $pendingPayoutUsdt = null,
+        /**
+         * USDT only: same as `held`.
+         */
+        public readonly ?string $heldUsdt = null,
     ) {
     }
 
@@ -42,8 +54,11 @@ final class CryptoBalanceDto extends Model
             available: self::required($data, 'available'),
             pendingPayout: self::required($data, 'pendingPayout'),
             asOf: self::required($data, 'asOf'),
+            held: $data['held'] ?? null,
+            nextReleaseAt: $data['nextReleaseAt'] ?? null,
             availableUsdt: $data['availableUsdt'] ?? null,
             pendingPayoutUsdt: $data['pendingPayoutUsdt'] ?? null,
+            heldUsdt: $data['heldUsdt'] ?? null,
         ))->withRaw($data);
     }
 }

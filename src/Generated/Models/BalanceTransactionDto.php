@@ -33,6 +33,10 @@ final class BalanceTransactionDto extends Model
          * externalRef of the linked payment or payout.
          */
         public readonly ?string $externalRef = null,
+        /**
+         * Part of the 24h balance hold: this movement counts in `heldVes` (not `availableVes`) until this time.
+         */
+        public readonly ?string $availableAt = null,
     ) {
     }
 
@@ -52,6 +56,7 @@ final class BalanceTransactionDto extends Model
             chargebackId: $data['chargebackId'] ?? null,
             merchantId: $data['merchantId'] ?? null,
             externalRef: $data['externalRef'] ?? null,
+            availableAt: $data['availableAt'] ?? null,
         ))->withRaw($data);
     }
 }

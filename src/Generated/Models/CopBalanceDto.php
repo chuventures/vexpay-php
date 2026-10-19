@@ -12,7 +12,7 @@ final class CopBalanceDto extends Model
 {
     public function __construct(
         /**
-         * Whole pesos available for payout.
+         * Whole pesos available for payout. Excludes `heldCop`.
          */
         public readonly float $availableCop,
         /**
@@ -20,6 +20,14 @@ final class CopBalanceDto extends Model
          */
         public readonly float $pendingPayoutCop,
         public readonly string $asOf,
+        /**
+         * Whole pesos under the 24h balance hold: credited but not payable until the hold ends.
+         */
+        public readonly ?float $heldCop = null,
+        /**
+         * When the soonest held amount becomes available; null when nothing is held.
+         */
+        public readonly ?string $nextReleaseAt = null,
     ) {
     }
 
@@ -32,6 +40,8 @@ final class CopBalanceDto extends Model
             availableCop: self::required($data, 'availableCop'),
             pendingPayoutCop: self::required($data, 'pendingPayoutCop'),
             asOf: self::required($data, 'asOf'),
+            heldCop: $data['heldCop'] ?? null,
+            nextReleaseAt: $data['nextReleaseAt'] ?? null,
         ))->withRaw($data);
     }
 }
