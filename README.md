@@ -225,7 +225,7 @@ try {
 | `AuthenticationException` | 401 — missing or invalid API key |
 | `InvalidRequestException` | 400, 403, 410, 422 — fix the request |
 | `NotFoundException` | 404 |
-| `ConflictException` | 409 — e.g. `external_ref_conflict`, `idempotency_key_reused` |
+| `ConflictException` | 409 — e.g. `external_ref_conflict`, `external_ref_already_paid` (body `paymentId`), `idempotency_key_reused` |
 | `RateLimitException` | 429, after retries |
 | `ApiException` | 5xx, after retries |
 | `ApiConnectionException` / `ApiTimeoutException` | no HTTP answer, after retries |

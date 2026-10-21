@@ -41,7 +41,7 @@ final class VposPaymentDto extends Model
          */
         public readonly ?string $cardPin = null,
         /**
-         * Correlation value; not an idempotency key.
+         * Correlation value; not an idempotency key. A ref that already has a COMPLETED payment is refused (409 external_ref_already_paid).
          */
         public readonly ?string $externalRef = null,
         /**

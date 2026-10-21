@@ -50,6 +50,14 @@ final class CreateCheckoutSessionDto extends Model
          * @var array<string, string>|null
          */
         public readonly ?array $metadata = null,
+        /**
+         * Split the payment with one of your merchants (UUID or `mrc_` id). The merchant's share is credited to its VES balance when the payment completes. Only bolívar methods (`c2p`, `pago_movil`, `vpos`) are offered.
+         */
+        public readonly ?string $merchantId = null,
+        /**
+         * Commission percent you keep when `merchantId` is set. Omit to use the merchant's commission, then your default commission.
+         */
+        public readonly ?float $applicationFeePercent = null,
     ) {
     }
 
@@ -68,6 +76,8 @@ final class CreateCheckoutSessionDto extends Model
             allowedOrigins: $data['allowedOrigins'] ?? null,
             methods: isset($data['methods']) ? array_map(static fn ($item) => self::enumOrRaw(CreateCheckoutSessionDtoMethods::class, $item), $data['methods']) : null,
             metadata: $data['metadata'] ?? null,
+            merchantId: $data['merchantId'] ?? null,
+            applicationFeePercent: $data['applicationFeePercent'] ?? null,
         ))->withRaw($data);
     }
 }

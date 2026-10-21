@@ -34,7 +34,7 @@ final class C2pPaymentDto extends Model
          */
         public readonly ?float $vesAmount = null,
         /**
-         * Correlation value; not an idempotency key.
+         * Correlation value; not an idempotency key. A ref that already has a COMPLETED payment is refused (409 external_ref_already_paid).
          */
         public readonly ?string $externalRef = null,
         /**

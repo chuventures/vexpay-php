@@ -11,4 +11,5 @@ enum PayoutBatchItemResultDtoStatus: string
     case Completed = 'completed';
     case Pending = 'pending';
     case Failed = 'failed';
+    case AwaitingApproval = 'awaiting_approval';
 }

@@ -29,7 +29,7 @@ final class C2pRequestDto extends Model
          */
         public readonly ?float $vesAmount = null,
         /**
-         * Correlation value; not an idempotency key. When present, any other PENDING C2P intent for this tenant + externalRef is canceled (superseded) before the new intent is created.
+         * Correlation value; not an idempotency key. A ref that already has a COMPLETED payment is refused (409 external_ref_already_paid). When present, any other PENDING C2P intent for this tenant + externalRef is canceled (superseded) before the new intent is created.
          */
         public readonly ?string $externalRef = null,
         public readonly ?string $merchantId = null,

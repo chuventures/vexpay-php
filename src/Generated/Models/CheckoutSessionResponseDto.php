@@ -49,6 +49,14 @@ final class CheckoutSessionResponseDto extends Model
          * Latest payment for this session, once one exists.
          */
         public readonly ?string $paymentId = null,
+        /**
+         * Merchant the payment is split with.
+         */
+        public readonly ?string $merchantId = null,
+        /**
+         * Commission percent set on the session; null = merchant or tenant default at payment time.
+         */
+        public readonly ?string $applicationFeePercent = null,
     ) {
     }
 
@@ -75,6 +83,8 @@ final class CheckoutSessionResponseDto extends Model
             successUrl: $data['successUrl'] ?? null,
             cancelUrl: $data['cancelUrl'] ?? null,
             paymentId: $data['paymentId'] ?? null,
+            merchantId: $data['merchantId'] ?? null,
+            applicationFeePercent: $data['applicationFeePercent'] ?? null,
         ))->withRaw($data);
     }
 }

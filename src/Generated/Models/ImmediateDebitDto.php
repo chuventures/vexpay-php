@@ -40,7 +40,7 @@ final class ImmediateDebitDto extends Model
          */
         public readonly string $concepto,
         /**
-         * Tenant correlation value for recovery lookup (GET /v1/payments/by-ref/:externalRef). Not an idempotency key.
+         * Tenant correlation value for recovery lookup (GET /v1/payments/by-ref/:externalRef). Not an idempotency key; a ref that already has a COMPLETED payment is refused (409 external_ref_already_paid).
          */
         public readonly ?string $externalRef = null,
         public readonly ?string $merchantId = null,

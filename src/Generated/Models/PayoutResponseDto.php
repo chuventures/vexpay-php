@@ -16,9 +16,13 @@ final class PayoutResponseDto extends Model
          */
         public readonly string $payoutId,
         /**
-         * `pending` means the credit is still reconciling (AC00); subscribe to payout webhooks or poll GET /v1/payouts/:id.
+         * `pending` means the credit is still reconciling (AC00); subscribe to payout webhooks or poll GET /v1/payouts/:id. `awaiting_approval` means the funds are reserved but the payout is held for VEX Pay review (see `holdReason`) and has not been sent; it later becomes `pending`/`completed` when approved or `failed` (`rejected_new_account_limit`, funds returned) when rejected.
          */
         public readonly PayoutResponseDtoStatus|string $status,
+        /**
+         * Why the payout was held for review. `NEW_ACCOUNT_LIMIT`: the tenant or merchant is new (first 30 days) and this payout would take its rolling 24h money-out above the new-account cap (default US$300 equivalent).
+         */
+        public readonly PayoutResponseDtoHoldReason|string|null $holdReason = null,
         /**
          * Bank reference when available.
          */
@@ -80,6 +84,7 @@ final class PayoutResponseDto extends Model
         return (new self(
             payoutId: self::required($data, 'payoutId'),
             status: self::enumOrRaw(PayoutResponseDtoStatus::class, self::required($data, 'status')),
+            holdReason: isset($data['holdReason']) ? self::enumOrRaw(PayoutResponseDtoHoldReason::class, $data['holdReason']) : null,
             reference: $data['reference'] ?? null,
             failureCode: $data['failureCode'] ?? null,
             externalRef: $data['externalRef'] ?? null,
