@@ -154,6 +154,34 @@ $copQuote = $vexpay->conversions->quotes->create(['sourceCurrency' => 'COP', 'so
 $vexpay->conversions->settings->update(['autoConvert' => ['COP' => ['percent' => 50]]]);
 ```
 
+## Subscriptions (billing)
+
+Bill a customer every period on a recurring price. Each period opens an invoice; with `send_invoice` (the default) the customer pays it on a hosted page, with `charge_automatically` VEXPay debits their domiciliación payment method (your account must be allowed domiciliación).
+
+```php
+use VexPay\VexPayClient;
+
+$vexpay = new VexPayClient(getenv('VEXPAY_API_KEY'));
+
+$customer = $vexpay->customers->create(['name' => 'Ana Pérez', 'email' => 'ana@example.com', 'phone' => '04141234567']);
+$price = $vexpay->prices->create(['product' => 'prod_123', 'unitAmountUsd' => 9.99, 'recurring' => ['interval' => 'month']]);
+
+// Optional: the customer authorizes domiciliación here; then subscribe with 'collectionMethod' => 'charge_automatically'.
+$setup = $vexpay->setupSessions->create(['customer' => $customer->id, 'successUrl' => 'https://shop.example/billing/done']);
+echo $setup->url, "\n";
+
+$subscription = $vexpay->subscriptions->create(
+    ['customer' => $customer->id, 'price' => $price->id],
+    ['idempotency_key' => 'sub-' . $customer->id],
+);
+
+foreach ($vexpay->invoices->list(['subscription' => $subscription->id, 'status' => 'open']) as $invoice) {
+    echo $invoice->id, "\n";
+}
+```
+
+`subscriptions->cancel($id)` cancels now and voids open invoices; `update($id, ['cancelAtPeriodEnd' => true])` stops at the end of the period. Webhooks: `customer.*`, `customer.subscription.*`, `invoice.*` and `payment_method.*` (see `Webhook::EVENT_NAMES`).
+
 ## Testing card payments
 
 With a test API key, VPOS test cards return a fixed outcome without reaching the bank: `4242424242424242` succeeds, `4000000000009995` is declined with `G51` (insufficient funds), `4000000000000259` completes and is then charged back, and more. A decline fails exactly like a live one (422, the bank code in `code` and `failureCode`, a `payment.failed` webhook). With a live key these numbers are refused with 400 `test_card_in_live_mode`. Full list: [test cards](https://docs.pay.vexwallet.co/vpos#test-card).
@@ -252,7 +280,7 @@ echo $quote->vesAmount, ' ', $session->id, "\n";
 
 ## Pagination
 
-`list()` on payouts, merchants, and products returns the first page; iterate it to walk every item across pages. Following pages are fetched only when iteration reaches them.
+`list()` on payouts, merchants, products, customers, prices, subscriptions, and invoices returns the first page; iterate it to walk every item across pages. Following pages are fetched only when iteration reaches them.
 
 ```php
 use VexPay\VexPayClient;
@@ -338,6 +366,13 @@ Using Laravel? `VexPay::fake()` in `vexpay/laravel` wraps this with Laravel-styl
 | `paymentLinks` | `retrieve`, `update`, `delete` |
 | `tenantPayoutAccount` | `retrieve`, `upsert`, `create`, `startVerification`, `confirmVerification` |
 | `webhookEndpoints` | `create`, `list`, `update`, `delete`, `sendTest` |
+| `customers` | `create`, `list`, `retrieve`, `update`, `delete` |
+| `customers->paymentMethods` | `list` |
+| `prices` | `create`, `list`, `retrieve`, `update` |
+| `subscriptions` | `create`, `list`, `retrieve`, `update`, `cancel` |
+| `invoices` | `list`, `retrieve`, `void`, `markUncollectible`, `pay` |
+| `setupSessions` | `create`, `retrieve` |
+| `paymentMethods` | `retrieve`, `detach` |
 | `VexPay\Webhook` | `constructEvent`, `generateTestHeader` (offline, static) |
 
 ## License

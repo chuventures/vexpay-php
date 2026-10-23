@@ -84,13 +84,14 @@ abstract class AbstractResource
      * @param class-string<P> $pageClass a list response with `items` and `nextCursor`
      * @param array<string, mixed> $query
      * @param array<string, mixed> $options
+     * @param array<string, string> $path
      */
-    protected function page(string $operationId, string $pageClass, array $query = [], array $options = []): CursorPage
+    protected function page(string $operationId, string $pageClass, array $query = [], array $options = [], array $path = []): CursorPage
     {
-        $fetch = function (?string $cursor) use ($operationId, $pageClass, $query, $options): Model {
+        $fetch = function (?string $cursor) use ($operationId, $pageClass, $query, $options, $path): Model {
             $query['cursor'] = $cursor;
 
-            return self::hydrate($pageClass, $this->send($operationId, [], $query, null, $options));
+            return self::hydrate($pageClass, $this->send($operationId, $path, $query, null, $options));
         };
         $start = isset($query['cursor']) ? (string) $query['cursor'] : null;
 

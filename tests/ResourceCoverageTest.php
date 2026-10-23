@@ -56,6 +56,10 @@ final class ResourceCoverageTest extends TestCase
         self::assertTrue(method_exists($client->crypto->depositAddresses, 'create'));
         self::assertTrue(method_exists($client->webhookEndpoints, 'sendTest'));
         self::assertTrue(method_exists($client->tenantPayoutAccount, 'upsert'));
+        self::assertTrue(method_exists($client->customers->paymentMethods, 'list'));
+        self::assertTrue(method_exists($client->paymentMethods, 'detach'));
+        self::assertTrue(method_exists($client->invoices, 'markUncollectible'));
+        self::assertTrue(method_exists($client->subscriptions, 'cancel'));
     }
 
     public function testRetrieveSendsTheMappedRoute(): void

@@ -38,5 +38,24 @@ enum UpdateWebhookDtoEvents: string
     case TenantApiKeyRotated = 'tenant.api_key.rotated';
     case TenantApiKeyRevoked = 'tenant.api_key.revoked';
     case TenantLiveStatusChanged = 'tenant.live_status_changed';
+    case CustomerCreated = 'customer.created';
+    case CustomerUpdated = 'customer.updated';
+    case CustomerDeleted = 'customer.deleted';
+    case CustomerSubscriptionCreated = 'customer.subscription.created';
+    case CustomerSubscriptionUpdated = 'customer.subscription.updated';
+    case CustomerSubscriptionDeleted = 'customer.subscription.deleted';
+    case CustomerSubscriptionTrialWillEnd = 'customer.subscription.trial_will_end';
+    case CustomerSubscriptionReactivated = 'customer.subscription.reactivated';
+    case InvoiceCreated = 'invoice.created';
+    case InvoiceUpcoming = 'invoice.upcoming';
+    case InvoicePaid = 'invoice.paid';
+    case InvoicePaymentAttempt = 'invoice.payment_attempt';
+    case InvoicePaymentFailed = 'invoice.payment_failed';
+    case InvoiceOverdue = 'invoice.overdue';
+    case InvoiceVoided = 'invoice.voided';
+    case InvoiceMarkedUncollectible = 'invoice.marked_uncollectible';
+    case PaymentMethodAttached = 'payment_method.attached';
+    case PaymentMethodUpdated = 'payment_method.updated';
+    case PaymentMethodDetached = 'payment_method.detached';
     case NotificationTest = 'notification.test';
 }

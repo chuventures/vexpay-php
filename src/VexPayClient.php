@@ -12,12 +12,18 @@ use VexPay\Resource\Checkout;
 use VexPay\Resource\Conversions;
 use VexPay\Resource\Cop;
 use VexPay\Resource\Crypto;
+use VexPay\Resource\Customers;
+use VexPay\Resource\Invoices;
 use VexPay\Resource\Merchants;
 use VexPay\Resource\PaymentLinks;
+use VexPay\Resource\PaymentMethods;
 use VexPay\Resource\Payments;
 use VexPay\Resource\Payouts;
+use VexPay\Resource\Prices;
 use VexPay\Resource\Products;
 use VexPay\Resource\Quotes;
+use VexPay\Resource\SetupSessions;
+use VexPay\Resource\Subscriptions;
 use VexPay\Resource\TenantPayoutAccount;
 use VexPay\Resource\WebhookEndpoints;
 
@@ -52,6 +58,15 @@ final class VexPayClient
     public readonly PaymentLinks $paymentLinks;
     public readonly TenantPayoutAccount $tenantPayoutAccount;
     public readonly WebhookEndpoints $webhookEndpoints;
+    /** Billing: customers, recurring prices, subscriptions and their invoices. */
+    public readonly Customers $customers;
+    public readonly Prices $prices;
+    public readonly Subscriptions $subscriptions;
+    public readonly Invoices $invoices;
+    /** Domiciliación setup links that attach a payment method to a customer. */
+    public readonly SetupSessions $setupSessions;
+    /** A customer's domiciliación payment methods (not `payments->methods()`). */
+    public readonly PaymentMethods $paymentMethods;
 
     private readonly Requester $requester;
 
@@ -77,6 +92,12 @@ final class VexPayClient
         $this->paymentLinks = new PaymentLinks($this->requester);
         $this->tenantPayoutAccount = new TenantPayoutAccount($this->requester);
         $this->webhookEndpoints = new WebhookEndpoints($this->requester);
+        $this->customers = new Customers($this->requester);
+        $this->prices = new Prices($this->requester);
+        $this->subscriptions = new Subscriptions($this->requester);
+        $this->invoices = new Invoices($this->requester);
+        $this->setupSessions = new SetupSessions($this->requester);
+        $this->paymentMethods = new PaymentMethods($this->requester);
     }
 
     public function banks(): Banks
@@ -147,5 +168,35 @@ final class VexPayClient
     public function webhookEndpoints(): WebhookEndpoints
     {
         return $this->webhookEndpoints;
+    }
+
+    public function customers(): Customers
+    {
+        return $this->customers;
+    }
+
+    public function prices(): Prices
+    {
+        return $this->prices;
+    }
+
+    public function subscriptions(): Subscriptions
+    {
+        return $this->subscriptions;
+    }
+
+    public function invoices(): Invoices
+    {
+        return $this->invoices;
+    }
+
+    public function setupSessions(): SetupSessions
+    {
+        return $this->setupSessions;
+    }
+
+    public function paymentMethods(): PaymentMethods
+    {
+        return $this->paymentMethods;
     }
 }

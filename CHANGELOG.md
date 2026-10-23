@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.0
+
+- Add billing: `customers` (`create`, `list`, `retrieve`, `update`, `delete`; `customers->paymentMethods->list($customerId)`), `prices` (`create`, `list`, `retrieve`, `update`), `subscriptions` (`create`, `list`, `retrieve`, `update`, `cancel`), `invoices` (`list`, `retrieve`, `void`, `markUncollectible`, `pay`), `setupSessions` (`create`, `retrieve` — domiciliación authorization links) and `paymentMethods` (`retrieve`, `detach`). Lists are cursor-paginated; create and update calls accept `idempotency_key`. `payments->methods()` (`GET /v1/payment-methods`) is unchanged. Billing webhook events (`customer.*`, `customer.subscription.*`, `invoice.*`, `payment_method.*`) are in `Webhook::EVENT_NAMES`.
+
 ## 0.10.0
 
 - Checkout sessions can split the payment with one of your merchants: `'merchantId' => …` (UUID or `mrc_` id) and optional `'applicationFeePercent' => 3` on `checkout->sessions->create()`, echoed on create and retrieve. Sessions with a merchant offer bolívar methods only (`c2p`, `pago_movil`, `vpos`); when the payment completes your commission stays with you and the seller's net goes to the merchant's balance. Sessions may also be refused with `invalid_data` for a method you turned off in Portal → Payment methods.
