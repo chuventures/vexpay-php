@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace VexPay\Resource;
 
+use VexPay\Generated\Models as M;
 use VexPay\Internal\Requester;
 use VexPay\Resource\Crypto\Balance as CryptoBalance;
 use VexPay\Resource\Crypto\Balances;
@@ -30,5 +31,18 @@ final class Crypto extends AbstractResource
         $this->depositAddresses = new DepositAddresses($requester);
         $this->networks = new Networks($requester);
         $this->payouts = new CryptoPayouts($requester);
+    }
+
+    /**
+     * Test mode only: credit a deposit to one of your deposit addresses (customerRef + currency +
+     * network, requested before) as if it had arrived on chain. Sends payment.completed with
+     * livemode false. A Live key gets 403 test_mode_only; an unknown address 404.
+     *
+     * @param array<string, mixed> $params
+     * @param array<string, mixed> $options
+     */
+    public function simulateDeposit(array $params, array $options = []): M\SimulatedDepositDto
+    {
+        return $this->model('Crypto_simulateDeposit', M\SimulatedDepositDto::class, body: $params, options: $options);
     }
 }

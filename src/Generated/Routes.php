@@ -37,6 +37,7 @@ final class Routes
         'Crypto_getBalances' => ['GET', '/v1/crypto/balances', 'CryptoBalancesDto'],
         'Crypto_getPayout' => ['GET', '/v1/crypto/payouts/{id}', 'CryptoPayoutDto'],
         'Crypto_listNetworks' => ['GET', '/v1/crypto/networks', 'CryptoNetworkDto'],
+        'Crypto_simulateDeposit' => ['POST', '/v1/crypto/deposit-addresses/simulate', 'SimulatedDepositDto'],
         'Customers_create' => ['POST', '/v1/customers', 'CustomerResponseDto'],
         'Customers_list' => ['GET', '/v1/customers', 'CustomerListResponseDto'],
         'Customers_remove' => ['DELETE', '/v1/customers/{id}', 'DeletedObjectResponseDto'],

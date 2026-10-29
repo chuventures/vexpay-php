@@ -388,6 +388,7 @@ Using Laravel? `VexPay::fake()` in `vexpay/laravel` wraps this with Laravel-styl
 | `payments->pagoMovil` | `receivingAccount`, `verify` |
 | `payments->debit` · `credit` · `operations` · `dispersals` · `change` | débito/crédito inmediato and disbursements (advanced payments) |
 | `checkout->sessions` | `create`, `retrieve` |
+| `crypto` | `simulateDeposit` (Test mode only) |
 | `crypto->balance` | `retrieve` |
 | `crypto->balances` | `list` |
 | `crypto->depositAddresses` | `create` |
