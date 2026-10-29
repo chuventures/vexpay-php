@@ -6,16 +6,19 @@ namespace VexPay\Resource;
 
 use VexPay\Generated\Models as M;
 use VexPay\Internal\Requester;
+use VexPay\Resource\Balance\Topups;
 use VexPay\Resource\Balance\Transactions;
 
 final class Balance extends AbstractResource
 {
     public readonly Transactions $transactions;
+    public readonly Topups $topups;
 
     public function __construct(Requester $requester)
     {
         parent::__construct($requester);
         $this->transactions = new Transactions($requester);
+        $this->topups = new Topups($requester);
     }
 
     /**

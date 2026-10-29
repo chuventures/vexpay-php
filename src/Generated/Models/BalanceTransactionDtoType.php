@@ -23,4 +23,10 @@ enum BalanceTransactionDtoType: string
     case Conversion = 'conversion';
     case ConversionReversal = 'conversion_reversal';
     case MerchantPayoutFee = 'merchant_payout_fee';
+    case DisbursementPayoutFee = 'disbursement_payout_fee';
+    case DisbursementPayoutFeeReversal = 'disbursement_payout_fee_reversal';
+    case Topup = 'topup';
+    case TopupFee = 'topup_fee';
+    case TopupInstantRelease = 'topup_instant_release';
+    case TopupInstantFee = 'topup_instant_fee';
 }

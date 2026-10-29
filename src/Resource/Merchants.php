@@ -87,14 +87,51 @@ final class Merchants extends AbstractResource
     }
 
     /**
-     * Move VES between this merchant's balance and another.
+     * Credit this seller's pending balance from your platform balance. Send `amountVes`, or
+     * `amountUsd` to convert at the official BCV rate (503 `rate_unavailable` when no rate can be
+     * read); `transferKey` makes it idempotent. Returns the seller balance plus `transfer`.
      *
-     * @param array<string, mixed> $params
+     * @param array<string, mixed> $params `amountVes` or `amountUsd`, `transferKey`, `paymentId`
      * @param array<string, mixed> $options
      */
-    public function transfer(string $id, array $params, array $options = []): M\MerchantBalanceDto
+    public function transfer(string $id, array $params, array $options = []): M\MerchantTransferResponseDto
     {
-        return $this->model('Merchants_transfer', M\MerchantBalanceDto::class, ['id' => $id], body: $params, options: $options);
+        return $this->model('Merchants_transfer', M\MerchantTransferResponseDto::class, ['id' => $id], body: $params, options: $options);
+    }
+
+    /**
+     * Seller balance movements, newest first; iterate the result for every movement (`MerchantMovementDto`).
+     *
+     * @param array<string, mixed> $params `limit`, `cursor`, `from`, `to`
+     * @param array<string, mixed> $options
+     */
+    public function listTransactions(string $id, array $params = [], array $options = []): CursorPage
+    {
+        return $this->page('Merchants_listTransactions', M\MerchantMovementListDto::class, $params, $options, ['id' => $id]);
+    }
+
+    /**
+     * Monthly statement (America/Caracas): opening balance, movements (oldest first), closing balance.
+     *
+     * @param array<string, mixed> $params `month` (YYYY-MM)
+     * @param array<string, mixed> $options
+     */
+    public function retrieveStatement(string $id, array $params, array $options = []): M\MerchantStatementDto
+    {
+        return $this->model('Merchants_statement', M\MerchantStatementDto::class, ['id' => $id], array_merge($params, ['format' => 'json']), options: $options);
+    }
+
+    /**
+     * The same monthly statement as CSV (with a running balance column).
+     *
+     * @param array<string, mixed> $params `month` (YYYY-MM)
+     * @param array<string, mixed> $options
+     */
+    public function retrieveStatementCsv(string $id, array $params, array $options = []): string
+    {
+        $body = $this->send('Merchants_statement', ['id' => $id], array_merge($params, ['format' => 'csv']), null, $options);
+
+        return is_string($body) ? $body : '';
     }
 
     /**

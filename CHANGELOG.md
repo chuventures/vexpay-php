@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.12.0
+
+- COP: new channels `pse`, `bancolombia_transfer` and `bancolombia_qr` (and `card`, taken only on the hosted checkout). `cop->channels()` lists the channels your account can use now, the PSE banks and the terms links. `cop->payments->create()` takes `pse.bankCode`, `buyer.firstName`/`lastName`/`personType` and `buyer.termsAccepted`; `next` adds `redirect` (with `url`), `redirect_pending`, `processing` and `qrSvgBase64`. Card payments carry `card` (`brand`, `last4`); `failureCode` adds `chargeback`. Refunds of channels without API refunds fail with `refund_not_supported`.
+- Disbursements: `merchants->transfer($id, [...])` credits a seller from your balance (`amountUsd` converted at the official BCV rate, or `amountVes`; `transferKey` makes it idempotent), `merchants->listTransactions($id)` (cursor-paginated), `merchants->retrieveStatement($id, ['month' => 'YYYY-MM'])` and `retrieveStatementCsv()`. Payout webhooks report `feePaidByTenant` and `feeVes` when your balance pays a disbursement's withdrawal fee.
+- Balance top-ups: `balance->topups->create()`, `list()`, `retrieve()`, `instant()` and `simulate()` load your own Bs balance by Pago Móvil. Enabled per account (`topups_not_enabled`); monthly limit `topup_cap_exceeded`. New balance transaction types `topup`, `topup_fee`, `topup_instant_release`, `topup_instant_fee`.
+
 ## 0.11.0
 
 - Add billing: `customers` (`create`, `list`, `retrieve`, `update`, `delete`; `customers->paymentMethods->list($customerId)`), `prices` (`create`, `list`, `retrieve`, `update`), `subscriptions` (`create`, `list`, `retrieve`, `update`, `cancel`), `invoices` (`list`, `retrieve`, `void`, `markUncollectible`, `pay`), `setupSessions` (`create`, `retrieve` — domiciliación authorization links) and `paymentMethods` (`retrieve`, `detach`). Lists are cursor-paginated; create and update calls accept `idempotency_key`. `payments->methods()` (`GET /v1/payment-methods`) is unchanged. Billing webhook events (`customer.*`, `customer.subscription.*`, `invoice.*`, `payment_method.*`) are in `Webhook::EVENT_NAMES`.

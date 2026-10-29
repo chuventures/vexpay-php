@@ -91,12 +91,26 @@ The hosted page lets the buyer pick the currency — bolívares, stablecoins or 
 
 ## Colombian pesos (COP)
 
-Collect pesos from buyers in Colombia through Bre-B, Nequi or Daviplata. Amounts are whole pesos, payments complete asynchronously (`payment.completed` / `payment.failed`), and completed payments go to your COP balance net of the COP fee. COP must be enabled on your account — otherwise the calls fail with `method_not_allowed` (403).
+Collect pesos from buyers in Colombia through PSE, Bancolombia (transfer or QR), Bre-B, Nequi or Daviplata — and cards on the hosted checkout. Amounts are whole pesos, payments complete asynchronously (`payment.completed` / `payment.failed`), and completed payments go to your COP balance net of the COP fee. COP must be enabled on your account — otherwise the calls fail with `method_not_allowed` (403).
 
 ```php
 use VexPay\VexPayClient;
 
 $vexpay = new VexPayClient(getenv('VEXPAY_API_KEY'));
+
+// What your account can use now, the PSE banks, and the terms links some channels need.
+$catalog = $vexpay->cop->channels();
+
+// `termsAccepted`: the buyer accepted $catalog->terms (needed where needsTermsAcceptance).
+$buyer = ['email' => 'juan@example.com', 'phone' => '3001234567', 'documentType' => 'CC', 'documentNumber' => '1234567890', 'termsAccepted' => true];
+
+// PSE: send the buyer to their bank (next->url). On redirect_pending, retrieve again in a few seconds.
+$pse = $vexpay->cop->payments->create([
+    'amountCop' => 80000,
+    'channel' => 'pse',
+    'pse' => ['bankCode' => $catalog->pseBanks[0]->code ?? '1007'],
+    'buyer' => $buyer + ['firstName' => 'Juan', 'lastName' => 'Pérez', 'personType' => 'natural'],
+]);
 
 // Bre-B: no buyer data. Show next->qrPngBase64 as an image and next->transferKey as text.
 $breb = $vexpay->cop->payments->create(
@@ -104,27 +118,27 @@ $breb = $vexpay->cop->payments->create(
     ['idempotency_key' => 'order-1042-cop'],
 );
 
-$buyer = ['email' => 'juan@example.com', 'phone' => '3001234567', 'documentType' => 'CC', 'documentNumber' => '1234567890'];
-
 // Nequi: the buyer approves a push in the Nequi app.
 $vexpay->cop->payments->create(['amountCop' => 50000, 'channel' => 'nequi', 'buyer' => $buyer]);
 
-// Daviplata: the buyer reads you the SMS code; submit it.
+// Daviplata: with next->type 'submit_otp' the buyer reads you the SMS code; submit it (otherwise follow next->url).
 $davi = $vexpay->cop->payments->create(['amountCop' => 50000, 'channel' => 'daviplata', 'buyer' => $buyer]);
 $vexpay->cop->payments->submitOtp($davi->id, ['otp' => '123456']);
 
 $available = $vexpay->cop->balance->retrieve()->availableCop;
 ```
 
-`cancel($id)` cancels a pending payment and `refund($id)` refunds a completed one in full within 96 hours. A webhook for a COP payment has `method` `COP`, with `channel`, `amountCop` and a lowercase `status`.
+`cancel($id)` cancels a pending payment and `refund($id)` refunds a completed one in full (cards within 24 hours, Bre-B within 96 hours; channels without API refunds fail with `refund_not_supported`). A webhook for a COP payment has `method` `COP`, with `channel`, `amountCop` and a lowercase `status`.
 
 **Test mode** (test API keys use a sandbox):
 
 | Channel | What to use | Result |
 |---|---|---|
 | Bre-B | No buyer data | QR and key from the sandbox. **Never send real money to them** — sandbox keys are reachable from real banks and the money is not credited. |
-| Nequi | Any valid data, e.g. phone `3001234567`, `CC` `1234567890`, any email | Completes on its own within about a minute |
-| Daviplata | Same buyer data (`CC`, `CE` or `TI` only) | OTP `123456`, `000000` or `111111` completes it; any other code fails with `invalid_otp` |
+| Nequi | Phone `3991111111`, any valid document and email | Completes on its own within about a minute; `3992222222` is declined |
+| Daviplata | Same buyer data (`CC`, `CE` or `TI` only) | With `submit_otp`, OTP `123456`, `000000` or `111111` completes it; any other code fails with `invalid_otp`. With `redirect`, follow the test page |
+| PSE | Any valid buyer data | Bank code `1` approves, `2` declines |
+| Card (hosted checkout) | `4242 4242 4242 4242`, any future expiry and CVC | Approved; `4111 1111 1111 1111` is declined |
 
 ## Convert VES or COP to USDT
 
@@ -278,6 +292,30 @@ $session = $vexpay->checkout->sessions->create(
 echo $quote->vesAmount, ' ', $session->id, "\n";
 ```
 
+## Seller balances
+
+`merchants->transfer()` credits a seller from your platform balance: send `amountVes`, or `amountUsd` to convert at the official BCV rate (fails with `rate_unavailable`, 503, when no rate can be read), plus a `transferKey` that makes it idempotent. The result is the seller balance plus `transfer` (amounts and rate used). Read the movements and the monthly statement back:
+
+```php
+use VexPay\VexPayClient;
+
+$vexpay = new VexPayClient(getenv('VEXPAY_API_KEY'));
+$merchantId = '00000000-0000-4000-8000-000000000002';
+
+$balance = $vexpay->merchants->transfer($merchantId, ['amountUsd' => '100.00', 'transferKey' => 'payroll-2026-11-u1']);
+echo $balance->pendingVes, ' ', $balance->transfer->amountVes, ' ', $balance->transfer->rate ?? '', "\n";
+
+foreach ($vexpay->merchants->listTransactions($merchantId, ['from' => '2026-11-01T00:00:00Z']) as $movement) {
+    echo $movement->amountVes, "\n";
+}
+
+$statement = $vexpay->merchants->retrieveStatement($merchantId, ['month' => '2026-11']);
+echo $statement->openingVes, ' → ', $statement->closingVes, ' (', count($statement->movements), " movements)\n";
+
+$csv = $vexpay->merchants->retrieveStatementCsv($merchantId, ['month' => '2026-11']);
+file_put_contents('php://output', $csv);
+```
+
 ## Pagination
 
 `list()` on payouts, merchants, products, customers, prices, subscriptions, and invoices returns the first page; iterate it to walk every item across pages. Following pages are fetched only when iteration reaches them.
@@ -343,6 +381,7 @@ Using Laravel? `VexPay::fake()` in `vexpay/laravel` wraps this with Laravel-styl
 | `banks` | `list` |
 | `quotes` | `retrieve` |
 | `balance` | `retrieve` |
+| `balance->topups` | `create`, `list`, `retrieve`, `instant`, `simulate` (load your own Bs balance by Pago Móvil; enabled per account) |
 | `payments` | `retrieve`, `retrieveByRef`, `reverse` |
 | `payments->c2p` | `request`, `execute` |
 | `payments->vpos` | `create` |
@@ -358,8 +397,9 @@ Using Laravel? `VexPay::fake()` in `vexpay/laravel` wraps this with Laravel-styl
 | `conversions->quotes` | `create` |
 | `conversions->settings` | `retrieve`, `update` |
 | `cop->payments` | `create`, `retrieve`, `submitOtp`, `cancel`, `refund` |
+| `cop` | `channels` |
 | `cop->balance` | `retrieve` |
-| `merchants` | `create`, `list`, `retrieve`, `retrieveByRef`, `update`, `delete`, `retrieveBalance`, `transfer`, `listAuditEvents`, `startVerification`, `confirmVerification` |
+| `merchants` | `create`, `list`, `retrieve`, `retrieveByRef`, `update`, `delete`, `retrieveBalance`, `transfer`, `listTransactions`, `retrieveStatement`, `retrieveStatementCsv`, `listAuditEvents`, `startVerification`, `confirmVerification` |
 | `merchants->payoutMethods` | `list`, `create`, `setDefault`, `delete`, `startVerification`, `confirmVerification` |
 | `payouts` | `create`, `createInstant`, `createBatch`, `list`, `retrieve`, `retrieveByRef` |
 | `products` | `create`, `list`, `retrieve`, `update`, `delete`, `createLink`, `listLinks` |

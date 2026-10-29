@@ -11,4 +11,8 @@ enum CopPaymentDtoChannel: string
     case Breb = 'breb';
     case Nequi = 'nequi';
     case Daviplata = 'daviplata';
+    case Card = 'card';
+    case Pse = 'pse';
+    case BancolombiaTransfer = 'bancolombia_transfer';
+    case BancolombiaQr = 'bancolombia_qr';
 }

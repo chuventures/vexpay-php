@@ -55,9 +55,13 @@ final class PayoutResponseDto extends Model
          */
         public readonly ?string $feePercent = null,
         /**
-         * Platform fee in VES retained on instant tenant credits.
+         * Platform fee in VES: retained on instant tenant credits, or the end-user withdrawal fee on a disbursement payout (see feePayer).
          */
         public readonly ?string $feeVes = null,
+        /**
+         * Set to "tenant" when your balance paid feeVes (disbursement withdrawal fee): the end user was debited only monto.
+         */
+        public readonly PayoutResponseDtoFeePayer|string|null $feePayer = null,
         public readonly ?string $concepto = null,
         /**
          * Destination bank SIMF code.
@@ -96,6 +100,7 @@ final class PayoutResponseDto extends Model
             grossMonto: $data['grossMonto'] ?? null,
             feePercent: $data['feePercent'] ?? null,
             feeVes: $data['feeVes'] ?? null,
+            feePayer: isset($data['feePayer']) ? self::enumOrRaw(PayoutResponseDtoFeePayer::class, $data['feePayer']) : null,
             concepto: $data['concepto'] ?? null,
             bankCode: $data['bankCode'] ?? null,
             destination: $data['destination'] ?? null,

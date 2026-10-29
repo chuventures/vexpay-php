@@ -16,7 +16,7 @@ final class CreateCopPaymentDto extends Model
          */
         public readonly float $amountCop,
         /**
-         * `breb`: QR code / transfer key the buyer pays from any Colombian bank app. `nequi`: push to the buyer's Nequi app. `daviplata`: SMS code the buyer reads to you.
+         * `breb`: QR code / transfer key the buyer pays from any Colombian bank app. `nequi`: push to the buyer's Nequi app. `daviplata`: SMS code the buyer reads to you, or a redirect. `pse` and `bancolombia_transfer`: redirect to the buyer's bank. `bancolombia_qr`: QR the buyer scans in the Bancolombia app. `card`: hosted checkout only (`channel_requires_checkout`).
          */
         public readonly CreateCopPaymentDtoChannel|string $channel,
         /**
@@ -34,9 +34,13 @@ final class CreateCopPaymentDto extends Model
          */
         public readonly ?array $metadata = null,
         /**
-         * Required for `nequi` and `daviplata`; optional for `breb`.
+         * Required for every channel except `breb`.
          */
         public readonly ?CopBuyerDto $buyer = null,
+        /**
+         * Required for `pse`.
+         */
+        public readonly ?CopPseDto $pse = null,
     ) {
     }
 
@@ -52,6 +56,7 @@ final class CreateCopPaymentDto extends Model
             reference: $data['reference'] ?? null,
             metadata: $data['metadata'] ?? null,
             buyer: isset($data['buyer']) ? CopBuyerDto::fromArray($data['buyer']) : null,
+            pse: isset($data['pse']) ? CopPseDto::fromArray($data['pse']) : null,
         ))->withRaw($data);
     }
 }

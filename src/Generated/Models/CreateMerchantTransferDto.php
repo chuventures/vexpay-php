@@ -12,13 +12,17 @@ final class CreateMerchantTransferDto extends Model
 {
     public function __construct(
         /**
-         * Exact two-decimal VES amount to move from platform float → seller pending.
-         */
-        public readonly string $amountVes,
-        /**
          * Idempotency key for this transfer under the merchant.
          */
         public readonly string $transferKey,
+        /**
+         * Exact two-decimal VES amount to move from platform float → seller pending. Send this or `amountUsd`, not both.
+         */
+        public readonly ?string $amountVes = null,
+        /**
+         * Exact two-decimal USD amount, converted to VES at the official BCV rate at the time of the request (regardless of your account’s Bolívar rate setting). The rate is saved with the transfer and a replay returns it. Send this or `amountVes`, not both.
+         */
+        public readonly ?string $amountUsd = null,
         /**
          * Optional funding payment correlation (does not enforce remaining-net).
          */
@@ -32,8 +36,9 @@ final class CreateMerchantTransferDto extends Model
     public static function fromArray(array $data): static
     {
         return (new self(
-            amountVes: self::required($data, 'amountVes'),
             transferKey: self::required($data, 'transferKey'),
+            amountVes: $data['amountVes'] ?? null,
+            amountUsd: $data['amountUsd'] ?? null,
             paymentId: $data['paymentId'] ?? null,
         ))->withRaw($data);
     }

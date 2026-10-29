@@ -34,13 +34,22 @@ final class CopPaymentDto extends Model
          */
         public readonly ?string $copRate = null,
         public readonly ?string $reference = null,
+        /**
+         * `chargeback`: a refunded card payment the buyer disputed with their bank.
+         */
         public readonly CopPaymentDtoFailureCode|string|null $failureCode = null,
         public readonly ?string $expiresAt = null,
         public readonly ?string $completedAt = null,
         /**
-         * What the buyer must do next. Returned when the payment is created.
+         * What the buyer must do next. Returned when the payment is created, and on reads while a bank redirect or QR is pending.
          */
         public readonly ?CopNextActionDto $next = null,
+        /**
+         * Card payments: brand and last 4 digits, once known.
+         *
+         * @var array<string, mixed>|null
+         */
+        public readonly ?array $card = null,
     ) {
     }
 
@@ -65,6 +74,7 @@ final class CopPaymentDto extends Model
             expiresAt: $data['expiresAt'] ?? null,
             completedAt: $data['completedAt'] ?? null,
             next: isset($data['next']) ? CopNextActionDto::fromArray($data['next']) : null,
+            card: $data['card'] ?? null,
         ))->withRaw($data);
     }
 }
