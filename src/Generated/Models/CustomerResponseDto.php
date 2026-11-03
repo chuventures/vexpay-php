@@ -25,6 +25,9 @@ final class CustomerResponseDto extends Model
         public readonly ?string $phone = null,
         public readonly ?string $idNumber = null,
         public readonly ?string $bankCode = null,
+        /**
+         * Test clock id (`clock_…`) the customer runs on, or null.
+         */
         public readonly ?string $testClock = null,
     ) {
     }

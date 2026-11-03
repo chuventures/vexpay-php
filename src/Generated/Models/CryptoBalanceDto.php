@@ -22,11 +22,11 @@ final class CryptoBalanceDto extends Model
         public readonly string $pendingPayout,
         public readonly string $asOf,
         /**
-         * Under the 24h balance hold: credited but not payable until its hold ends, in `currency`.
+         * Credited but not payable yet, in `currency`: under a balance hold until it ends, or bought with VES still awaiting bank confirmation until the bank confirms it.
          */
         public readonly ?string $held = null,
         /**
-         * When the soonest held amount becomes available; null when nothing is held.
+         * When the soonest held amount becomes available; null when nothing is held or only amounts awaiting bank confirmation (no set time) are held.
          */
         public readonly ?string $nextReleaseAt = null,
         /**

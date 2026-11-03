@@ -16,11 +16,11 @@ final class PayoutBatchItemResultDto extends Model
          */
         public readonly string $payoutId,
         /**
-         * `pending` means the credit is still reconciling (AC00); subscribe to payout webhooks or poll GET /v1/payouts/:id. `awaiting_approval` means the funds are reserved but the payout is held for VEX Pay review (see `holdReason`) and has not been sent; it later becomes `pending`/`completed` when approved or `failed` (`rejected_new_account_limit`, funds returned) when rejected.
+         * `pending` means the credit is still reconciling (AC00); subscribe to payout webhooks or poll GET /v1/payouts/:id. `awaiting_approval` means the funds are reserved but the payout is held for VEX Pay review (see `holdReason`) and has not been sent; it later becomes `pending`/`completed` when approved or `failed` (`rejected_new_account_limit` or `rejected_bank_unfunded`, funds returned) when rejected.
          */
         public readonly PayoutBatchItemResultDtoStatus|string $status,
         /**
-         * Why the payout was held for review. `NEW_ACCOUNT_LIMIT`: the tenant or merchant is new (first 30 days) and this payout would take its rolling 24h money-out above the new-account cap (default US$300 equivalent).
+         * Why the payout was held for review. `NEW_ACCOUNT_LIMIT`: the tenant or merchant is new (first 30 days) and this payout would take its rolling 24h money-out above the new-account cap (default US$300 equivalent). `BANK_UNFUNDED`: VEX Pay could not send the transfer right away on its side; it is sent once reviewed, or rejected with `rejected_bank_unfunded` and the funds returned.
          */
         public readonly PayoutBatchItemResultDtoHoldReason|string|null $holdReason = null,
         /**

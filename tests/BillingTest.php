@@ -104,6 +104,33 @@ final class BillingTest extends TestCase
         self::assertSame('/v1/payment-methods', $http->recorded('Payments_listPaymentMethods')[0]->path);
     }
 
+    public function testTestClocks(): void
+    {
+        [$vexpay, $http] = self::fake();
+
+        $clock = $vexpay->testClocks->create(['frozenTime' => '2026-01-01T00:00:00.000Z', 'name' => 'Dunning']);
+        self::assertInstanceOf(M\TestClockResponseDto::class, $clock);
+        $create = $http->recorded('TestClocks_create')[0];
+        self::assertSame(['POST', '/v1/test-clocks'], [$create->method, $create->path]);
+        self::assertSame('2026-01-01T00:00:00.000Z', $create->body['frozenTime']);
+
+        $vexpay->testClocks->list(['limit' => 5]);
+        self::assertSame('/v1/test-clocks', $http->recorded('TestClocks_list')[0]->path);
+        $vexpay->testClocks->retrieve('clock_1');
+        self::assertSame('/v1/test-clocks/clock_1', $http->recorded('TestClocks_retrieve')[0]->path);
+
+        self::assertInstanceOf(M\TestClockResponseDto::class, $vexpay->testClocks()->advance('clock_1', ['frozenTime' => '2026-01-05T00:00:00.000Z']));
+        $advance = $http->recorded('TestClocks_advance')[0];
+        self::assertSame(['POST', '/v1/test-clocks/clock_1/advance'], [$advance->method, $advance->path]);
+        self::assertSame(['frozenTime' => '2026-01-05T00:00:00.000Z'], $advance->body);
+
+        self::assertInstanceOf(M\DeletedObjectResponseDto::class, $vexpay->testClocks->delete('clock_1'));
+        self::assertSame('DELETE', $http->recorded('TestClocks_remove')[0]->method);
+
+        $vexpay->customers->create(['email' => 'clock@example.com', 'testClock' => 'clock_1']);
+        self::assertSame('clock_1', $http->recorded('Customers_create')[0]->body['testClock']);
+    }
+
     public function testCustomerPaymentMethodsPaginateUnderTheCustomer(): void
     {
         $api = (new MockApi())

@@ -16,7 +16,7 @@ use VexPay\Exception\ConfigurationException;
  */
 final class Config
 {
-    public const DEFAULT_BASE_URL = 'https://api.pay.vexwallet.co';
+    public const DEFAULT_BASE_URL = 'https://api.vexpay.app';
     public const DEFAULT_TIMEOUT = 30.0;
     public const DEFAULT_MAX_NETWORK_RETRIES = 2;
 

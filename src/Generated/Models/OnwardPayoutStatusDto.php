@@ -12,7 +12,7 @@ final class OnwardPayoutStatusDto extends Model
 {
     public function __construct(
         /**
-         * `waiting_release`: converted, waiting for the 24h balance hold to end before sending (see `sendAfter`).
+         * `waiting_release`: converted, waiting before sending until the balance hold ends (see `sendAfter`) or, with `reason: awaiting_bank_confirmation`, until the bank confirms the paid VES.
          */
         public readonly OnwardPayoutStatusDtoStatus|string $status,
         public readonly string $network,
@@ -40,11 +40,11 @@ final class OnwardPayoutStatusDto extends Model
          */
         public readonly ?string $txHash = null,
         /**
-         * Why it is held, failed or canceled.
+         * Why it is waiting, held, failed or canceled (`awaiting_bank_confirmation` while the bank has not confirmed the paid VES).
          */
         public readonly ?string $reason = null,
         /**
-         * `waiting_release` only: when the converted USDT leaves the balance hold and the payout is sent.
+         * `waiting_release` only: when the converted USDT leaves the balance hold and the payout is sent. Omitted while waiting for bank confirmation.
          */
         public readonly ?string $sendAfter = null,
     ) {

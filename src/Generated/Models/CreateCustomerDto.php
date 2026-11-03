@@ -32,7 +32,7 @@ final class CreateCustomerDto extends Model
          */
         public readonly ?array $metadata = null,
         /**
-         * Test clock id (test mode only). Not available yet.
+         * Attach the customer to a test clock (test mode only, at most 3 customers per clock). Set on create only.
          */
         public readonly ?string $testClock = null,
     ) {

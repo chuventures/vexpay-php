@@ -26,7 +26,7 @@ final class ModelTest extends TestCase
             'object' => 'checkout.session',
             'status' => 'open',
             'clientSecret' => 'cs_123_secret',
-            'url' => 'https://pay.vexwallet.co/checkout/cs_123',
+            'url' => 'https://pay.vexpay.app/checkout/cs_123',
             'amountUsd' => '25.00',
             'description' => null,
             'metadata' => ['orderId' => '1042'],
@@ -43,7 +43,7 @@ final class ModelTest extends TestCase
     {
         $session = CheckoutSessionResponseDto::fromArray(self::session());
 
-        self::assertSame('https://pay.vexwallet.co/checkout/cs_123', $session->url);
+        self::assertSame('https://pay.vexpay.app/checkout/cs_123', $session->url);
         self::assertSame(CheckoutSessionResponseDtoStatus::Open, $session->status);
         self::assertSame([CheckoutSessionResponseDtoMethods::C2p, CheckoutSessionResponseDtoMethods::Vpos], $session->methods);
         self::assertSame(['orderId' => '1042'], $session->metadata);

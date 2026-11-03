@@ -80,7 +80,7 @@ final class ModelSampler
             return '2026-01-01T00:00:00.000Z';
         }
         if (str_ends_with(strtolower($name), 'url')) {
-            return 'https://pay.vexwallet.co/fake';
+            return 'https://pay.vexpay.app/fake';
         }
         if (preg_match('/amount|usd|ves|monto|rate|fee|balance|percent/i', $name) === 1) {
             return '1.00';

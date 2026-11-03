@@ -25,6 +25,7 @@ use VexPay\Resource\Quotes;
 use VexPay\Resource\SetupSessions;
 use VexPay\Resource\Subscriptions;
 use VexPay\Resource\TenantPayoutAccount;
+use VexPay\Resource\TestClocks;
 use VexPay\Resource\WebhookEndpoints;
 
 /**
@@ -33,7 +34,7 @@ use VexPay\Resource\WebhookEndpoints;
  *     $vexpay = new VexPayClient(getenv('VEXPAY_API_KEY'));
  *     $vexpay = new VexPayClient([
  *         'api_key' => getenv('VEXPAY_API_KEY'),
- *         'base_url' => 'https://api.pay.vexwallet.co',
+ *         'base_url' => 'https://api.vexpay.app',
  *         'timeout' => 30,              // seconds per attempt
  *         'max_network_retries' => 2,
  *         'http_client' => $psr18Client, // optional; Guzzle by default
@@ -67,6 +68,8 @@ final class VexPayClient
     public readonly SetupSessions $setupSessions;
     /** A customer's domiciliación payment methods (not `payments->methods()`). */
     public readonly PaymentMethods $paymentMethods;
+    /** Test mode only: simulated time for trials, renewals and dunning. */
+    public readonly TestClocks $testClocks;
 
     private readonly Requester $requester;
 
@@ -98,6 +101,7 @@ final class VexPayClient
         $this->invoices = new Invoices($this->requester);
         $this->setupSessions = new SetupSessions($this->requester);
         $this->paymentMethods = new PaymentMethods($this->requester);
+        $this->testClocks = new TestClocks($this->requester);
     }
 
     public function banks(): Banks
@@ -198,5 +202,10 @@ final class VexPayClient
     public function paymentMethods(): PaymentMethods
     {
         return $this->paymentMethods;
+    }
+
+    public function testClocks(): TestClocks
+    {
+        return $this->testClocks;
     }
 }

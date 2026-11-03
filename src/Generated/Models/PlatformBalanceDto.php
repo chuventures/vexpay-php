@@ -27,7 +27,7 @@ final class PlatformBalanceDto extends Model
         public readonly string $reserveVes,
         public readonly string $ledgerNetVes,
         /**
-         * What payouts can spend: ledgerNetVes − reserveVes − heldVes (seller obligations already deducted via SELLER_TRANSFER).
+         * What payouts and automatic settlement can spend: ledgerNetVes − reserveVes − heldVes − unconfirmedVes (seller obligations already deducted via SELLER_TRANSFER).
          */
         public readonly string $availableVes,
         public readonly string $platformAvailableVes,
@@ -40,7 +40,7 @@ final class PlatformBalanceDto extends Model
         public readonly string $feePercent,
         public readonly string $feeFixedUsd,
         /**
-         * VES under the 24h balance hold: incoming credits count in `ledgerNetVes` but cannot be paid out until their hold ends. Conversions and seller transfers may still use them.
+         * VES under a balance hold set by VEXPay (none by default, see `balanceHoldHours`): such credits count in `ledgerNetVes` but cannot be paid out until their hold ends. Conversions and seller transfers may still use them.
          */
         public readonly ?string $heldVes = null,
         /**
@@ -48,7 +48,15 @@ final class PlatformBalanceDto extends Model
          */
         public readonly ?string $nextReleaseAt = null,
         /**
-         * Hours each incoming credit is held before payouts can spend it (0 = no hold). Set by VEXPay.
+         * Bs from payments the bank has not confirmed yet: they count in `ledgerNetVes` but cannot be paid out or settled until the bank confirms them. Conversions and seller transfers may still use them.
+         */
+        public readonly ?string $unconfirmedVes = null,
+        /**
+         * Automatic Bs settlement to your verified payout account.
+         */
+        public readonly ?BsSettlementStatusDto $settlement = null,
+        /**
+         * Hours each incoming credit is held before payouts can spend it (0 = no hold, the default). Set by VEXPay.
          */
         public readonly ?float $balanceHoldHours = null,
     ) {
@@ -78,6 +86,8 @@ final class PlatformBalanceDto extends Model
             feeFixedUsd: self::required($data, 'feeFixedUsd'),
             heldVes: $data['heldVes'] ?? null,
             nextReleaseAt: $data['nextReleaseAt'] ?? null,
+            unconfirmedVes: $data['unconfirmedVes'] ?? null,
+            settlement: isset($data['settlement']) ? BsSettlementStatusDto::fromArray($data['settlement']) : null,
             balanceHoldHours: $data['balanceHoldHours'] ?? null,
         ))->withRaw($data);
     }

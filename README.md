@@ -1,6 +1,6 @@
 # VEXPay PHP SDK
 
-The official PHP library for the [VEXPay](https://vexwallet.co/vexpay) API: accept Venezuelan payments (Pago Móvil C2P, cards, débito inmediato), pay out to merchants, create checkout sessions, and verify signed webhooks.
+The official PHP library for the [VEXPay](https://vexpay.app) API: accept Venezuelan payments (Pago Móvil C2P, cards, débito inmediato), pay out to merchants, create checkout sessions, and verify signed webhooks.
 
 - Every API operation, grouped like the Node and Python SDKs (`$vexpay->checkout->sessions->create()`)
 - Typed readonly models and enums generated from the VEXPay OpenAPI contract
@@ -198,7 +198,7 @@ foreach ($vexpay->invoices->list(['subscription' => $subscription->id, 'status' 
 
 ## Testing card payments
 
-With a test API key, VPOS test cards return a fixed outcome without reaching the bank: `4242424242424242` succeeds, `4000000000009995` is declined with `G51` (insufficient funds), `4000000000000259` completes and is then charged back, and more. A decline fails exactly like a live one (422, the bank code in `code` and `failureCode`, a `payment.failed` webhook). With a live key these numbers are refused with 400 `test_card_in_live_mode`. Full list: [test cards](https://docs.pay.vexwallet.co/vpos#test-card).
+With a test API key, VPOS test cards return a fixed outcome without reaching the bank: `4242424242424242` succeeds, `4000000000009995` is declined with `G51` (insufficient funds), `4000000000000259` completes and is then charged back, and more. A decline fails exactly like a live one (422, the bank code in `code` and `failureCode`, a `payment.failed` webhook). With a live key these numbers are refused with 400 `test_card_in_live_mode`. Full list: [test cards](https://docs.vexpay.app/vpos#test-card).
 
 ## Webhooks
 
@@ -343,7 +343,7 @@ use VexPay\VexPayClient;
 
 $vexpay = new VexPayClient([
     'api_key' => getenv('VEXPAY_API_KEY'),
-    'base_url' => 'https://api.pay.vexwallet.co', // e.g. http://localhost:3010 for a local API
+    'base_url' => 'https://api.vexpay.app', // e.g. http://localhost:3010 for a local API
     'timeout' => 30,                              // seconds per attempt
     'max_network_retries' => 2,
 ]);

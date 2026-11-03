@@ -57,5 +57,7 @@ enum UpdateWebhookDtoEvents: string
     case PaymentMethodAttached = 'payment_method.attached';
     case PaymentMethodUpdated = 'payment_method.updated';
     case PaymentMethodDetached = 'payment_method.detached';
+    case TestClockAdvancing = 'test_clock.advancing';
+    case TestClockReady = 'test_clock.ready';
     case NotificationTest = 'notification.test';
 }

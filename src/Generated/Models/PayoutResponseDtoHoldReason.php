@@ -9,4 +9,5 @@ namespace VexPay\Generated\Models;
 enum PayoutResponseDtoHoldReason: string
 {
     case NewAccountLimit = 'NEW_ACCOUNT_LIMIT';
+    case BankUnfunded = 'BANK_UNFUNDED';
 }
