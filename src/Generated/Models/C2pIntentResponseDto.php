@@ -76,6 +76,12 @@ final class C2pIntentResponseDto extends Model
          * Present when the pay-in was sent with `onwardPayout`.
          */
         public readonly ?OnwardPayoutStatusDto $onwardPayout = null,
+        /**
+         * Multi-merchant split payments only: each merchant share with its commission, VEX Pay fee and net (feeVes / netVes are set when the payment completes). Omitted for every other payment.
+         *
+         * @var list<PaymentSplitViewDto>|null
+         */
+        public readonly ?array $splits = null,
     ) {
     }
 
@@ -117,6 +123,7 @@ final class C2pIntentResponseDto extends Model
             reversalRef: $data['reversalRef'] ?? null,
             reversalTxId: $data['reversalTxId'] ?? null,
             onwardPayout: isset($data['onwardPayout']) ? OnwardPayoutStatusDto::fromArray($data['onwardPayout']) : null,
+            splits: isset($data['splits']) ? self::listOf(PaymentSplitViewDto::class, $data['splits']) : null,
         ))->withRaw($data);
     }
 }

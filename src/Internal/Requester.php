@@ -175,12 +175,12 @@ final class Requester
         } catch (ClientExceptionInterface $exception) {
             if (self::isTimeout($exception)) {
                 throw new ApiTimeoutException(
-                    sprintf('Request to VEXPay timed out after %ss', $timeout),
+                    sprintf('Request to VEX Pay timed out after %ss', $timeout),
                     previous: $exception,
                 );
             }
 
-            throw new ApiConnectionException('Could not reach VEXPay: ' . $exception->getMessage(), previous: $exception);
+            throw new ApiConnectionException('Could not reach VEX Pay: ' . $exception->getMessage(), previous: $exception);
         }
     }
 

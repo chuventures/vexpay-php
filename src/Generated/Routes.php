@@ -48,6 +48,8 @@ final class Routes
         'Invoices_pay' => ['POST', '/v1/invoices/{id}/pay', 'InvoiceResponseDto'],
         'Invoices_retrieve' => ['GET', '/v1/invoices/{id}', 'InvoiceResponseDto'],
         'Invoices_void' => ['POST', '/v1/invoices/{id}/void', 'InvoiceResponseDto'],
+        'MarketplaceSettings_get' => ['GET', '/v1/marketplace/settings', 'MarketplaceSettingsDto'],
+        'MarketplaceSettings_update' => ['PATCH', '/v1/marketplace/settings', 'MarketplaceSettingsDto'],
         'Merchants_addPayoutMethod' => ['POST', '/v1/merchants/{id}/payout-methods', 'PayoutMethodResponseDto'],
         'Merchants_confirmVerify' => ['POST', '/v1/merchants/{id}/verify', 'VerifyConfirmResponseDto'],
         'Merchants_confirmVerifyMethod' => ['POST', '/v1/merchants/{id}/payout-methods/{methodId}/verify', 'VerifyConfirmResponseDto'],

@@ -7,16 +7,19 @@ namespace VexPay\Resource;
 use VexPay\Generated\Models as M;
 use VexPay\Internal\Requester;
 use VexPay\Pagination\CursorPage;
+use VexPay\Resource\Merchants\MarketplaceSettings;
 use VexPay\Resource\Merchants\PayoutMethods;
 
 final class Merchants extends AbstractResource
 {
     public readonly PayoutMethods $payoutMethods;
+    public readonly MarketplaceSettings $marketplaceSettings;
 
     public function __construct(Requester $requester)
     {
         parent::__construct($requester);
         $this->payoutMethods = new PayoutMethods($requester);
+        $this->marketplaceSettings = new MarketplaceSettings($requester);
     }
 
     /**

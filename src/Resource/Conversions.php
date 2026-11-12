@@ -12,7 +12,7 @@ use VexPay\Resource\Conversions\Settings;
 
 /**
  * Convert available VES or COP into your USDT balance (enabled per account). Accepting a quote debits
- * the source at once (`conversion.created`); the conversion is `PENDING` until VEXPay delivers the USDT
+ * the source at once (`conversion.created`); the conversion is `PENDING` until VEX Pay delivers the USDT
  * (`conversion.completed`).
  */
 final class Conversions extends AbstractResource

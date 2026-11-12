@@ -40,7 +40,7 @@ final class PlatformBalanceDto extends Model
         public readonly string $feePercent,
         public readonly string $feeFixedUsd,
         /**
-         * VES under a balance hold set by VEXPay (none by default, see `balanceHoldHours`): such credits count in `ledgerNetVes` but cannot be paid out until their hold ends. Conversions and seller transfers may still use them.
+         * VES under a balance hold set by VEX Pay (none by default, see `balanceHoldHours`): such credits count in `ledgerNetVes` but cannot be paid out until their hold ends. Conversions and seller transfers may still use them.
          */
         public readonly ?string $heldVes = null,
         /**
@@ -56,7 +56,7 @@ final class PlatformBalanceDto extends Model
          */
         public readonly ?BsSettlementStatusDto $settlement = null,
         /**
-         * Hours each incoming credit is held before payouts can spend it (0 = no hold, the default). Set by VEXPay.
+         * Hours each incoming credit is held before payouts can spend it (0 = no hold, the default). Set by VEX Pay.
          */
         public readonly ?float $balanceHoldHours = null,
     ) {

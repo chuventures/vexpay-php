@@ -16,7 +16,7 @@ final class ImmediateDebitResponseDto extends Model
          */
         public readonly string $code,
         /**
-         * VEXPay payment id for this débito inmediato (method DEBITO_INMEDIATO).
+         * VEX Pay payment id for this débito inmediato (method DEBITO_INMEDIATO).
          */
         public readonly string $paymentId,
         /**

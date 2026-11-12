@@ -29,7 +29,7 @@ use VexPay\Resource\TestClocks;
 use VexPay\Resource\WebhookEndpoints;
 
 /**
- * VEXPay API client.
+ * VEX Pay API client.
  *
  *     $vexpay = new VexPayClient(getenv('VEXPAY_API_KEY'));
  *     $vexpay = new VexPayClient([

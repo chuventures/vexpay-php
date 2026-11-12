@@ -28,6 +28,10 @@ final class MerchantMovementDto extends Model
          */
         public readonly ?string $transferKey = null,
         public readonly ?string $paymentId = null,
+        /**
+         * `credit` rows of a multi-merchant split payment: the share `reference` sent with the payment.
+         */
+        public readonly ?string $splitReference = null,
         public readonly ?string $payoutId = null,
         /**
          * `credit` rows: when the credit becomes withdrawable.
@@ -59,6 +63,7 @@ final class MerchantMovementDto extends Model
             releasedVes: $data['releasedVes'] ?? null,
             transferKey: $data['transferKey'] ?? null,
             paymentId: $data['paymentId'] ?? null,
+            splitReference: $data['splitReference'] ?? null,
             payoutId: $data['payoutId'] ?? null,
             availableAt: $data['availableAt'] ?? null,
             amountUsd: $data['amountUsd'] ?? null,

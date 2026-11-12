@@ -56,6 +56,6 @@ final class ErrorFactory
             return $body;
         }
 
-        return sprintf('VEXPay API responded with HTTP %d', $status);
+        return sprintf('VEX Pay API responded with HTTP %d', $status);
     }
 }

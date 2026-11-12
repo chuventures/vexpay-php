@@ -13,7 +13,6 @@ enum BsSettlementStatusDtoStatus: string
     case PayoutAccountUnverified = 'payout_account_unverified';
     case PayoutAccountCooling = 'payout_account_cooling';
     case Paused = 'paused';
-    case OptedOut = 'opted_out';
     case Disbursements = 'disbursements';
     case TestMode = 'test_mode';
 }

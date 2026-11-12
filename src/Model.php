@@ -55,7 +55,7 @@ abstract class Model implements \JsonSerializable
     {
         if (!array_key_exists($key, $data) || $data[$key] === null) {
             throw new UnexpectedResponseException(
-                sprintf('VEXPay response for %s is missing required field "%s".', static::class, $key),
+                sprintf('VEX Pay response for %s is missing required field "%s".', static::class, $key),
                 body: $data,
             );
         }

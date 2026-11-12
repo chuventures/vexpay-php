@@ -7,7 +7,7 @@ namespace VexPay\Resource;
 use VexPay\Generated\Models as M;
 
 /**
- * The account your own VEXPay earnings are paid out to.
+ * The account your own VEX Pay earnings are paid out to.
  */
 final class TenantPayoutAccount extends AbstractResource
 {

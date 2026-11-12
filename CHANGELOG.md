@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.16.0
+
+- Marketplace: `splits` (up to 10 shares: `merchantId`, `amount`, optional `applicationFeeVes` / `applicationFeePercent`, `reference`; `SplitShareDto`) on débito execute, C2P request / execute, Pago Móvil verify and VPOS create. Payments read back `splits` (`PaymentSplitViewDto`) with each share's commission, VEX Pay fee and net.
+- New `merchants->marketplaceSettings->retrieve()` / `update()` (`MarketplaceSettingsDto`, `UpdateMarketplaceSettingsDto`) for the comercio auto-payout default and minimum; `merchants->create()` takes an optional `autoPayoutEnabled`.
+
+## 0.15.0
+
+- Payout account: `tenantPayoutAccount->upsert()` takes `'type' => 'bank_account'` with `cuenta` (20 digits), `cedula` and `titular` to receive instant credits on a checking account (`UpsertTenantPayoutAccountDtoType`); omitting `type` keeps the Pago Móvil account. Responses add `type`, `holderName` and the masked `destination`.
+- `BsSettlementStatusDtoStatus` drops the unused `OptedOut` case.
+- Error messages write the brand as "VEX Pay" (was "VEXPay").
+- Package metadata: the Packagist homepage and `support.docs` point at https://docs.vexpay.app/php-sdk, and VEX Pay (https://vexpay.app) is listed as the author.
+
 ## 0.14.0
 
 - The default API origin is now `https://api.vexpay.app`. The earlier host `https://api.pay.vexwallet.co` keeps working with no end date; pass it as `'base_url'` to keep using it.

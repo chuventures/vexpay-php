@@ -7,7 +7,7 @@ namespace VexPay\Resource;
 use VexPay\Generated\Models as M;
 
 /**
- * Where VEXPay delivers signed webhooks.
+ * Where VEX Pay delivers signed webhooks.
  */
 final class WebhookEndpoints extends AbstractResource
 {

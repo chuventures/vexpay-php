@@ -12,17 +12,29 @@ final class UpsertTenantPayoutAccountDto extends Model
 {
     public function __construct(
         /**
-         * Beneficiary bank SIMF code (3–4 digits). Prefer codes from GET /v1/banks.
-         */
-        public readonly string $banco,
-        /**
-         * Beneficiary cédula/RIF.
+         * Beneficiary (account holder) cédula/RIF.
          */
         public readonly string $cedula,
         /**
-         * Beneficiary Pago Móvil phone (58… or 0…).
+         * `pago_movil` (bank + phone) or `bank_account` (20-digit checking account). Switching type is a destination change.
          */
-        public readonly string $telefono,
+        public readonly UpsertTenantPayoutAccountDtoType|string|null $type = null,
+        /**
+         * Beneficiary bank SIMF code (3–4 digits). Prefer codes from GET /v1/banks. Required for `pago_movil`; for `bank_account` it is taken from the account number and, when sent, must match its first 4 digits.
+         */
+        public readonly ?string $banco = null,
+        /**
+         * Beneficiary Pago Móvil phone (58… or 0…). Required for `pago_movil`.
+         */
+        public readonly ?string $telefono = null,
+        /**
+         * 20-digit checking account number. Required for `bank_account`.
+         */
+        public readonly ?string $cuenta = null,
+        /**
+         * Account holder name. Required for `bank_account`.
+         */
+        public readonly ?string $titular = null,
     ) {
     }
 
@@ -32,9 +44,12 @@ final class UpsertTenantPayoutAccountDto extends Model
     public static function fromArray(array $data): static
     {
         return (new self(
-            banco: self::required($data, 'banco'),
             cedula: self::required($data, 'cedula'),
-            telefono: self::required($data, 'telefono'),
+            type: isset($data['type']) ? self::enumOrRaw(UpsertTenantPayoutAccountDtoType::class, $data['type']) : null,
+            banco: $data['banco'] ?? null,
+            telefono: $data['telefono'] ?? null,
+            cuenta: $data['cuenta'] ?? null,
+            titular: $data['titular'] ?? null,
         ))->withRaw($data);
     }
 }

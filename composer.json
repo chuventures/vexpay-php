@@ -1,11 +1,18 @@
 {
     "name": "vexpay/vexpay-php",
-    "description": "Official PHP server SDK for the VEXPay payments API (Venezuela): C2P, card, Pago Móvil, checkout sessions, merchants, payouts and signed webhooks.",
+    "description": "Official PHP server SDK for the VEX Pay payments API (Venezuela): C2P, card, Pago Móvil, checkout sessions, merchants, payouts and signed webhooks.",
     "type": "library",
     "license": "MIT",
     "keywords": ["vexpay", "payments", "venezuela", "pago movil", "c2p", "checkout", "webhooks", "sdk"],
-    "homepage": "https://github.com/chuventures/vexpay-php",
+    "homepage": "https://docs.vexpay.app/php-sdk",
+    "authors": [
+        {
+            "name": "VEX Pay",
+            "homepage": "https://vexpay.app"
+        }
+    ],
     "support": {
+        "docs": "https://docs.vexpay.app/php-sdk",
         "issues": "https://github.com/chuventures/vexpay-php/issues",
         "source": "https://github.com/chuventures/vexpay-php"
     },

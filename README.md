@@ -1,9 +1,9 @@
-# VEXPay PHP SDK
+# VEX Pay PHP SDK
 
-The official PHP library for the [VEXPay](https://vexpay.app) API: accept Venezuelan payments (Pago Móvil C2P, cards, débito inmediato), pay out to merchants, create checkout sessions, and verify signed webhooks.
+The official PHP library for the [VEX Pay](https://vexpay.app) API: accept Venezuelan payments (Pago Móvil C2P, cards, débito inmediato), pay out to merchants, create checkout sessions, and verify signed webhooks.
 
 - Every API operation, grouped like the Node and Python SDKs (`$vexpay->checkout->sessions->create()`)
-- Typed readonly models and enums generated from the VEXPay OpenAPI contract
+- Typed readonly models and enums generated from the VEX Pay OpenAPI contract
 - Safe retries: every `POST` carries an `Idempotency-Key`, so a retried charge never charges twice
 - Auto-pagination
 - Webhook signature verification with replay protection
@@ -61,7 +61,7 @@ if ($payment->status === PaymentReceiptDtoStatus::Pending) {
 
 ## Checkout sessions (hosted or embedded)
 
-Let VEXPay collect the payment details. Redirect the buyer to `url`, or embed the checkout on your own site with [`@vexpay/js`](https://www.npmjs.com/package/@vexpay/js) and the one-time `clientSecret`.
+Let VEX Pay collect the payment details. Redirect the buyer to `url`, or embed the checkout on your own site with [`@vexpay/js`](https://www.npmjs.com/package/@vexpay/js) and the one-time `clientSecret`.
 
 ```php
 use VexPay\Generated\Models\CheckoutSessionResponseDtoStatus;
@@ -142,7 +142,7 @@ $available = $vexpay->cop->balance->retrieve()->availableCop;
 
 ## Convert VES or COP to USDT
 
-Turn available VES or Colombian pesos into your USDT balance. A quote locks the rate (market USDT rate in that currency plus your spread) for 60 seconds; accepting it debits the source at once (`conversion.created`) and returns a `PENDING` conversion. VEXPay then delivers the USDT and sends `conversion.completed` (or `conversion.canceled`, with the VES or COP returned). Conversions are on for every account that has USDT enabled (COP also needs COP enabled) — otherwise the calls fail with `conversions_not_enabled` (403). In test mode they complete immediately. COP amounts are whole pesos.
+Turn available VES or Colombian pesos into your USDT balance. A quote locks the rate (market USDT rate in that currency plus your spread) for 60 seconds; accepting it debits the source at once (`conversion.created`) and returns a `PENDING` conversion. VEX Pay then delivers the USDT and sends `conversion.completed` (or `conversion.canceled`, with the VES or COP returned). Conversions are on for every account that has USDT enabled (COP also needs COP enabled) — otherwise the calls fail with `conversions_not_enabled` (403). In test mode they complete immediately. COP amounts are whole pesos.
 
 ```php
 use VexPay\VexPayClient;
@@ -170,7 +170,7 @@ $vexpay->conversions->settings->update(['autoConvert' => ['COP' => ['percent' =>
 
 ## Subscriptions (billing)
 
-Bill a customer every period on a recurring price. Each period opens an invoice; with `send_invoice` (the default) the customer pays it on a hosted page, with `charge_automatically` VEXPay debits their domiciliación payment method (your account must be allowed domiciliación).
+Bill a customer every period on a recurring price. Each period opens an invoice; with `send_invoice` (the default) the customer pays it on a hosted page, with `charge_automatically` VEX Pay debits their domiciliación payment method (your account must be allowed domiciliación).
 
 ```php
 use VexPay\VexPayClient;
@@ -202,7 +202,7 @@ With a test API key, VPOS test cards return a fixed outcome without reaching the
 
 ## Webhooks
 
-VEXPay signs every delivery with a `VexPay-Signature` header. Verify it with the **raw** request body — decoding and re-encoding JSON changes the bytes and breaks the signature.
+VEX Pay signs every delivery with a `VexPay-Signature` header. Verify it with the **raw** request body — decoding and re-encoding JSON changes the bytes and breaks the signature.
 
 ```php
 use VexPay\Exception\SignatureVerificationException;

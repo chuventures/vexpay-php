@@ -12,7 +12,7 @@ use VexPay\Generated\Routes;
 use VexPay\Model;
 
 /**
- * In-memory PSR-18 transport for tests: no request leaves the process. Every VEXPay operation
+ * In-memory PSR-18 transport for tests: no request leaves the process. Every VEX Pay operation
  * answers with a valid body for its response model — required fields filled with placeholders,
  * overlaid with matching request fields (so `create()` echoes what you sent) — unless you stub it.
  *
@@ -55,7 +55,7 @@ final class FakeHttpClient implements ClientInterface
     public function stub(string $operationId, array|callable|ResponseInterface $stub): self
     {
         if (!isset(Routes::ROUTES[$operationId])) {
-            throw new \InvalidArgumentException(sprintf('Unknown VEXPay operationId "%s".', $operationId));
+            throw new \InvalidArgumentException(sprintf('Unknown VEX Pay operationId "%s".', $operationId));
         }
         $this->stubs[$operationId] = $stub;
 
@@ -74,7 +74,7 @@ final class FakeHttpClient implements ClientInterface
     {
         $recorded = $this->record($request);
         if ($recorded === null) {
-            return self::error(404, 'not_found', sprintf('No VEXPay route for %s %s.', $request->getMethod(), $request->getUri()->getPath()));
+            return self::error(404, 'not_found', sprintf('No VEX Pay route for %s %s.', $request->getMethod(), $request->getUri()->getPath()));
         }
         $this->recorded[] = $recorded;
 

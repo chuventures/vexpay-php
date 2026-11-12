@@ -27,7 +27,7 @@ final class CryptoPayoutDto extends Model
         public readonly string $fee,
         public readonly string $idempotencyKey,
         /**
-         * Settled inside VEXPay (destination is one of your own deposit addresses).
+         * Settled inside VEX Pay (destination is one of your own deposit addresses).
          */
         public readonly bool $internal,
         public readonly string $createdAt,

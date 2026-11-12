@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace VexPay\Exception;
 
 /**
- * Base of every exception the SDK throws. Catch this to handle any VEXPay failure.
+ * Base of every exception the SDK throws. Catch this to handle any VEX Pay failure.
  */
 class VexPayException extends \RuntimeException
 {

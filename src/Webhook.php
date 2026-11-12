@@ -8,7 +8,7 @@ use VexPay\Exception\SignatureVerificationException;
 use VexPay\Webhook\WebhookEvent;
 
 /**
- * Verify VEXPay webhook deliveries (`VexPay-Signature: t=<unix>,v1=<hex hmac>`). No API calls.
+ * Verify VEX Pay webhook deliveries (`VexPay-Signature: t=<unix>,v1=<hex hmac>`). No API calls.
  */
 final class Webhook
 {
@@ -134,7 +134,7 @@ final class Webhook
             throw new SignatureVerificationException('Webhook payload is not valid JSON.', previous: $exception);
         }
         if (!is_array($decoded) || !isset($decoded['event']) || !is_string($decoded['event'])) {
-            throw new SignatureVerificationException('Webhook payload is not a VEXPay event envelope.');
+            throw new SignatureVerificationException('Webhook payload is not a VEX Pay event envelope.');
         }
 
         return WebhookEvent::fromArray($decoded);

@@ -52,7 +52,7 @@ final class Invoices extends AbstractResource
     }
 
     /**
-     * Mark an open invoice paid outside VEXPay (cash, transfer): `['paidOutOfBand' => true]`.
+     * Mark an open invoice paid outside VEX Pay (cash, transfer): `['paidOutOfBand' => true]`.
      * No payment is taken and no balance changes.
      *
      * @param array<string, mixed> $params

@@ -34,6 +34,12 @@ final class PagoMovilVerifyDto extends Model
          * Convert this payment's net VES to USDT once it completes and send it to this wallet. Needs USDT and conversions enabled; not allowed with merchantId. See the "Pay in bolívars, receive USDT" guide.
          */
         public readonly ?OnwardPayoutDto $onwardPayout = null,
+        /**
+         * Split this payment between up to 10 of your merchants (marketplace). Each merchant is credited its share minus its part of the VEX Pay fee and your commission when the bank confirms the payment; the rest stays with your account. Not with merchantId / applicationFeeVes / applicationFeePercent, and not with onwardPayout. See the "Marketplace: split one payment between comercios" guide.
+         *
+         * @var list<SplitShareDto>|null
+         */
+        public readonly ?array $splits = null,
     ) {
     }
 
@@ -51,6 +57,7 @@ final class PagoMovilVerifyDto extends Model
             txType: isset($data['txType']) ? self::enumOrRaw(PagoMovilVerifyDtoTxType::class, $data['txType']) : null,
             debtorCellPhone: $data['debtorCellPhone'] ?? null,
             onwardPayout: isset($data['onwardPayout']) ? OnwardPayoutDto::fromArray($data['onwardPayout']) : null,
+            splits: isset($data['splits']) ? self::listOf(SplitShareDto::class, $data['splits']) : null,
         ))->withRaw($data);
     }
 }

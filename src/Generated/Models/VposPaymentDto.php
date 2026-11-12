@@ -57,6 +57,12 @@ final class VposPaymentDto extends Model
          * Optional percent of vesAmount used when applicationFeeVes is omitted. When both are omitted and merchantId is set, the merchant's commission (or the tenant default commission) applies.
          */
         public readonly ?float $applicationFeePercent = null,
+        /**
+         * Split this payment between up to 10 of your merchants (marketplace). Each merchant is credited its share minus its part of the VEX Pay fee and your commission when the bank confirms the payment; the rest stays with your account. Not with merchantId / applicationFeeVes / applicationFeePercent, and not with onwardPayout. See the "Marketplace: split one payment between comercios" guide.
+         *
+         * @var list<SplitShareDto>|null
+         */
+        public readonly ?array $splits = null,
     ) {
     }
 
@@ -82,6 +88,7 @@ final class VposPaymentDto extends Model
             merchantId: $data['merchantId'] ?? null,
             applicationFeeVes: $data['applicationFeeVes'] ?? null,
             applicationFeePercent: $data['applicationFeePercent'] ?? null,
+            splits: isset($data['splits']) ? self::listOf(SplitShareDto::class, $data['splits']) : null,
         ))->withRaw($data);
     }
 }

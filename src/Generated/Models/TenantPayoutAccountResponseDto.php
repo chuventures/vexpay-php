@@ -13,8 +13,9 @@ final class TenantPayoutAccountResponseDto extends Model
     public function __construct(
         public readonly string $accountId,
         public readonly string $bankCode,
+        public readonly TenantPayoutAccountResponseDtoType|string $type,
         /**
-         * Masked phone, e.g. …5555
+         * Masked destination: phone `…5555` (Pago Móvil) or account `••••6789` (bank_account).
          */
         public readonly string $destination,
         public readonly string $identification,
@@ -23,6 +24,10 @@ final class TenantPayoutAccountResponseDto extends Model
          */
         public readonly TenantPayoutAccountResponseDtoEligibility|string $eligibility,
         public readonly TenantPayoutAccountResponseDtoStatus|string $status,
+        /**
+         * Account holder name (bank_account only).
+         */
+        public readonly ?string $holderName = null,
         public readonly ?string $verifiedAt = null,
         /**
          * Instant payouts allowed at/after this timestamp (verifiedAt + 1 business day).
@@ -45,10 +50,12 @@ final class TenantPayoutAccountResponseDto extends Model
         return (new self(
             accountId: self::required($data, 'accountId'),
             bankCode: self::required($data, 'bankCode'),
+            type: self::enumOrRaw(TenantPayoutAccountResponseDtoType::class, self::required($data, 'type')),
             destination: self::required($data, 'destination'),
             identification: self::required($data, 'identification'),
             eligibility: self::enumOrRaw(TenantPayoutAccountResponseDtoEligibility::class, self::required($data, 'eligibility')),
             status: self::enumOrRaw(TenantPayoutAccountResponseDtoStatus::class, self::required($data, 'status')),
+            holderName: $data['holderName'] ?? null,
             verifiedAt: $data['verifiedAt'] ?? null,
             payoutEligibleAt: $data['payoutEligibleAt'] ?? null,
             failureCode: $data['failureCode'] ?? null,

@@ -27,6 +27,10 @@ final class CreateMerchantDto extends Model
          * Optional 11-digit local Pago Móvil phone for the first payout method. Provide together with bankCode, or omit both.
          */
         public readonly ?string $phone = null,
+        /**
+         * Pay this merchant's available balance automatically every 15 minutes. Omit it to use your account's `merchantAutoPayoutDefault` (GET /v1/marketplace/settings). Used only when the merchant is created; change it later with PATCH /v1/merchants/{id}.
+         */
+        public readonly ?bool $autoPayoutEnabled = null,
     ) {
     }
 
@@ -43,6 +47,7 @@ final class CreateMerchantDto extends Model
             contactPhone: self::required($data, 'contactPhone'),
             bankCode: $data['bankCode'] ?? null,
             phone: $data['phone'] ?? null,
+            autoPayoutEnabled: $data['autoPayoutEnabled'] ?? null,
         ))->withRaw($data);
     }
 }

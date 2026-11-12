@@ -55,7 +55,7 @@ final class Config
         $apiKey = $options['api_key'] ?? null;
         if (!is_string($apiKey) || trim($apiKey) === '') {
             throw new ConfigurationException(
-                "A VEXPay API key is required: new VexPayClient(getenv('VEXPAY_API_KEY'))."
+                "A VEX Pay API key is required: new VexPayClient(getenv('VEXPAY_API_KEY'))."
             );
         }
         $this->apiKey = trim($apiKey);

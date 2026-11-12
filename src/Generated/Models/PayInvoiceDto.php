@@ -12,7 +12,7 @@ final class PayInvoiceDto extends Model
 {
     public function __construct(
         /**
-         * Mark the invoice paid outside VEXPay (cash, transfer). No balance change.
+         * Mark the invoice paid outside VEX Pay (cash, transfer). No balance change.
          */
         public readonly bool $paidOutOfBand,
     ) {

@@ -63,7 +63,7 @@ abstract class AbstractResource
         self::checkModel($operationId, $class);
         $raw = $this->send($operationId, $path, $query, null, $options);
         if (!is_array($raw) || !array_is_list($raw)) {
-            throw new UnexpectedResponseException(sprintf('VEXPay %s did not return a list.', $operationId), body: $raw);
+            throw new UnexpectedResponseException(sprintf('VEX Pay %s did not return a list.', $operationId), body: $raw);
         }
 
         return array_map(static fn ($item) => self::hydrate($class, $item), $raw);
@@ -109,7 +109,7 @@ abstract class AbstractResource
     {
         if (!is_array($data)) {
             throw new UnexpectedResponseException(
-                sprintf('VEXPay response for %s is not a JSON object.', $class),
+                sprintf('VEX Pay response for %s is not a JSON object.', $class),
                 body: $data,
             );
         }
@@ -117,7 +117,7 @@ abstract class AbstractResource
             return $class::fromArray($data);
         } catch (\TypeError $error) {
             throw new UnexpectedResponseException(
-                sprintf('VEXPay response does not match %s: %s', $class, $error->getMessage()),
+                sprintf('VEX Pay response does not match %s: %s', $class, $error->getMessage()),
                 body: $data,
                 previous: $error,
             );

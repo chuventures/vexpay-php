@@ -12,11 +12,11 @@ final class BsSettlementStatusDto extends Model
 {
     public function __construct(
         /**
-         * True when your available Bs is settled automatically every 15 minutes.
+         * True when your available Bs is settled automatically as soon as the bank confirms each sale.
          */
         public readonly bool $enabled,
         /**
-         * `active` = settling; `no_payout_account` / `payout_account_unverified` = add and verify a payout account; `payout_account_cooling` = destination changed recently; `paused` = paused by VEXPay; `opted_out` = off for your account; `disbursements` = your balance funds disbursements; `test_mode` = never settled in test mode.
+         * `active` = settling; `no_payout_account` / `payout_account_unverified` = add and verify a payout account; `payout_account_cooling` = destination changed recently; `paused` = paused by VEX Pay; `disbursements` = your balance funds disbursements; `test_mode` = never settled in test mode.
          */
         public readonly BsSettlementStatusDtoStatus|string $status,
         /**
