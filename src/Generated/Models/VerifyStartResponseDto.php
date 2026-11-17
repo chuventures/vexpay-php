@@ -14,6 +14,12 @@ final class VerifyStartResponseDto extends Model
         public readonly string $status,
         public readonly string $expiresAt,
         public readonly ?string $payoutMethodId = null,
+        /**
+         * Test mode only: the two sandbox micro-deposit amounts to confirm (no money is sent in Test). Never present in live mode.
+         *
+         * @var list<string>|null
+         */
+        public readonly ?array $testAmounts = null,
     ) {
     }
 
@@ -26,6 +32,7 @@ final class VerifyStartResponseDto extends Model
             status: self::required($data, 'status'),
             expiresAt: self::required($data, 'expiresAt'),
             payoutMethodId: $data['payoutMethodId'] ?? null,
+            testAmounts: $data['testAmounts'] ?? null,
         ))->withRaw($data);
     }
 }

@@ -15,16 +15,6 @@ final class CopChannelsDto extends Model
          * @var list<CopChannelDto>
          */
         public readonly array $channels,
-        /**
-         * Present when `pse` is listed: banks for `pse.bankCode`.
-         *
-         * @var list<CopPseBankDto>|null
-         */
-        public readonly ?array $pseBanks = null,
-        /**
-         * Present when a listed channel needs terms acceptance.
-         */
-        public readonly ?CopTermsDto $terms = null,
     ) {
     }
 
@@ -35,8 +25,6 @@ final class CopChannelsDto extends Model
     {
         return (new self(
             channels: self::listOf(CopChannelDto::class, self::required($data, 'channels')),
-            pseBanks: isset($data['pseBanks']) ? self::listOf(CopPseBankDto::class, $data['pseBanks']) : null,
-            terms: isset($data['terms']) ? CopTermsDto::fromArray($data['terms']) : null,
         ))->withRaw($data);
     }
 }

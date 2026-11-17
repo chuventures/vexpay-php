@@ -51,36 +51,35 @@ final class CopTest extends TestCase
         self::assertSame('/v1/cop/balance', $api->request(5)->getUri()->getPath());
     }
 
-    public function testChannelsThenPseRedirect(): void
+    public function testChannelsThenNequiPush(): void
     {
         $api = (new MockApi())
             ->reply(200, [
-                'channels' => [['channel' => 'pse', 'label' => 'PSE', 'needsBuyer' => true, 'needsTermsAcceptance' => true, 'checkoutOnly' => false, 'minAmountCop' => 20000]],
-                'pseBanks' => [['code' => '1007', 'name' => 'Bancolombia']],
-                'terms' => ['termsUrl' => 'https://t', 'personalDataUrl' => 'https://d'],
+                'channels' => [
+                    ['channel' => 'breb', 'label' => 'Bre-B', 'needsBuyer' => false, 'minAmountCop' => 20000],
+                    ['channel' => 'nequi', 'label' => 'Nequi', 'needsBuyer' => true, 'minAmountCop' => 20000],
+                    ['channel' => 'daviplata', 'label' => 'Daviplata', 'needsBuyer' => true, 'minAmountCop' => 20000],
+                ],
             ])
-            ->reply(201, ['channel' => 'pse', 'next' => ['type' => 'redirect', 'url' => 'https://bank.example/pse']] + self::PAYMENT);
+            ->reply(201, ['channel' => 'nequi', 'next' => ['type' => 'approve_in_app', 'phoneMasked' => '****567']] + self::PAYMENT);
         $vexpay = $api->client();
 
         $catalog = $vexpay->cop->channels();
         self::assertInstanceOf(CopChannelsDto::class, $catalog);
         self::assertSame('/v1/cop/channels', $api->request(0)->getUri()->getPath());
-        self::assertTrue($catalog->channels[0]->needsTermsAcceptance);
-        self::assertSame('1007', $catalog->pseBanks[0]->code);
+        self::assertCount(3, $catalog->channels);
 
         $payment = $vexpay->cop->payments->create([
             'amountCop' => 80000,
-            'channel' => 'pse',
-            'pse' => ['bankCode' => '1007'],
+            'channel' => 'nequi',
             'buyer' => [
-                'firstName' => 'Juan', 'lastName' => 'Pérez', 'personType' => 'natural', 'email' => 'juan@example.com',
-                'phone' => '3001234567', 'documentType' => 'CC', 'documentNumber' => '1234567890', 'termsAccepted' => true,
+                'firstName' => 'Juan', 'lastName' => 'Pérez', 'email' => 'juan@example.com',
+                'phone' => '3001234567', 'documentType' => 'CC', 'documentNumber' => '1234567890',
             ],
         ]);
-        self::assertSame('redirect', $payment->next?->type?->value ?? $payment->next?->type);
-        self::assertSame('https://bank.example/pse', $payment->next?->url);
+        self::assertSame('approve_in_app', $payment->next?->type?->value ?? $payment->next?->type);
+        self::assertSame('****567', $payment->next?->phoneMasked);
         $body = json_decode((string) $api->request(1)->getBody(), true);
-        self::assertSame(['bankCode' => '1007'], $body['pse']);
-        self::assertTrue($body['buyer']['termsAccepted']);
+        self::assertSame('nequi', $body['channel']);
     }
 }

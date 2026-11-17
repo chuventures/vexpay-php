@@ -22,6 +22,8 @@ final class PaymentWebhookData
         public readonly ?string $method,
         public readonly ?float $usdAmount,
         public readonly ?float $vesAmount,
+        /** Pago Móvil only, set when the payer sent more than asked (up to Bs 500 more): the bolívar amount originally asked. vesAmount/usdAmount are then what arrived. */
+        public readonly ?float $requestedVesAmount,
         public readonly ?float $bcvRate,
         /** Rate the payment was priced at: bcvRate for BCV accounts, the market rate for MARKET accounts. */
         public readonly ?float $rate,
@@ -57,6 +59,7 @@ final class PaymentWebhookData
             method: self::str($data, 'method'),
             usdAmount: self::num($data, 'usdAmount'),
             vesAmount: self::num($data, 'vesAmount'),
+            requestedVesAmount: self::num($data, 'requestedVesAmount'),
             bcvRate: self::num($data, 'bcvRate'),
             rate: self::num($data, 'rate'),
             rateSource: self::str($data, 'rateSource'),

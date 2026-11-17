@@ -18,6 +18,9 @@ final class CheckoutSessionResponseDto extends Model
          */
         public readonly CheckoutSessionResponseDtoStatus|string $status,
         public readonly string $url,
+        /**
+         * USD amount; for a bolívar-priced session, `amountVes` at your Bolívar rate when it was created.
+         */
         public readonly string $amountUsd,
         /**
          * @var array<string, string>
@@ -41,6 +44,10 @@ final class CheckoutSessionResponseDto extends Model
          * Returned only by create. Pass it to @vexpay/js in the browser; never store or log it.
          */
         public readonly ?string $clientSecret = null,
+        /**
+         * Exact bolívar amount charged, for a session created with `amountVes`; null otherwise.
+         */
+        public readonly ?string $amountVes = null,
         public readonly ?string $description = null,
         public readonly ?string $reference = null,
         public readonly ?string $successUrl = null,
@@ -78,6 +85,7 @@ final class CheckoutSessionResponseDto extends Model
             createdAt: self::required($data, 'createdAt'),
             livemode: self::required($data, 'livemode'),
             clientSecret: $data['clientSecret'] ?? null,
+            amountVes: $data['amountVes'] ?? null,
             description: $data['description'] ?? null,
             reference: $data['reference'] ?? null,
             successUrl: $data['successUrl'] ?? null,

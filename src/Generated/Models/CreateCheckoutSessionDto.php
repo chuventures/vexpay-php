@@ -12,9 +12,13 @@ final class CreateCheckoutSessionDto extends Model
 {
     public function __construct(
         /**
-         * USD amount, up to 2 decimals.
+         * USD amount, up to 2 decimals. Send exactly one of `amountUsd` or `amountVes`.
          */
-        public readonly float $amountUsd,
+        public readonly ?float $amountUsd = null,
+        /**
+         * Exact bolívar amount, up to 2 decimals: Pago Móvil, Débito Inmediato and card charge exactly this, whatever the rate. `amountUsd` is then derived at your Bolívar rate. Send exactly one of `amountUsd` or `amountVes`; `cop` is not offered.
+         */
+        public readonly ?float $amountVes = null,
         /**
          * Buyer-facing label on the checkout.
          */
@@ -67,7 +71,8 @@ final class CreateCheckoutSessionDto extends Model
     public static function fromArray(array $data): static
     {
         return (new self(
-            amountUsd: self::required($data, 'amountUsd'),
+            amountUsd: $data['amountUsd'] ?? null,
+            amountVes: $data['amountVes'] ?? null,
             description: $data['description'] ?? null,
             reference: $data['reference'] ?? null,
             expiresInMinutes: $data['expiresInMinutes'] ?? null,

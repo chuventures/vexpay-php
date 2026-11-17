@@ -20,14 +20,6 @@ final class CopChannelDto extends Model
          * A `buyer` object is required.
          */
         public readonly bool $needsBuyer,
-        /**
-         * Show the buyer the `terms` links and send `buyer.termsAccepted: true`.
-         */
-        public readonly bool $needsTermsAcceptance,
-        /**
-         * Only through the hosted checkout (checkout sessions or payment links), never `POST /v1/cop/payments`.
-         */
-        public readonly bool $checkoutOnly,
         public readonly float $minAmountCop,
     ) {
     }
@@ -41,8 +33,6 @@ final class CopChannelDto extends Model
             channel: self::enumOrRaw(CopChannelDtoChannel::class, self::required($data, 'channel')),
             label: self::required($data, 'label'),
             needsBuyer: self::required($data, 'needsBuyer'),
-            needsTermsAcceptance: self::required($data, 'needsTermsAcceptance'),
-            checkoutOnly: self::required($data, 'checkoutOnly'),
             minAmountCop: self::required($data, 'minAmountCop'),
         ))->withRaw($data);
     }

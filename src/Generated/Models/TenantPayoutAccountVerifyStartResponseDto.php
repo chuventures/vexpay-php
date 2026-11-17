@@ -14,6 +14,12 @@ final class TenantPayoutAccountVerifyStartResponseDto extends Model
         public readonly TenantPayoutAccountVerifyStartResponseDtoStatus|string $status,
         public readonly string $expiresAt,
         public readonly string $accountId,
+        /**
+         * Test mode only: the two sandbox micro-deposit amounts to confirm (no money is sent in Test). Never present in live mode.
+         *
+         * @var list<string>|null
+         */
+        public readonly ?array $testAmounts = null,
     ) {
     }
 
@@ -26,6 +32,7 @@ final class TenantPayoutAccountVerifyStartResponseDto extends Model
             status: self::enumOrRaw(TenantPayoutAccountVerifyStartResponseDtoStatus::class, self::required($data, 'status')),
             expiresAt: self::required($data, 'expiresAt'),
             accountId: self::required($data, 'accountId'),
+            testAmounts: $data['testAmounts'] ?? null,
         ))->withRaw($data);
     }
 }

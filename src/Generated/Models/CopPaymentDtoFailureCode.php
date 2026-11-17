@@ -12,5 +12,4 @@ enum CopPaymentDtoFailureCode: string
     case Rejected = 'rejected';
     case ProcessorError = 'processor_error';
     case ProcessorUnknown = 'processor_unknown';
-    case Chargeback = 'chargeback';
 }

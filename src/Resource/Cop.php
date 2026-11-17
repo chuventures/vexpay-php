@@ -10,7 +10,7 @@ use VexPay\Resource\Cop\Balance;
 use VexPay\Resource\Cop\Payments;
 
 /**
- * Collect Colombian pesos (PSE, Bancolombia, Bre-B, Nequi, Daviplata; cards via the hosted checkout).
+ * Collect Colombian pesos (Bre-B, Nequi, Daviplata).
  * COP must be enabled on your account
  * (403 `method_not_allowed` otherwise).
  */
@@ -27,7 +27,7 @@ final class Cop extends AbstractResource
     }
 
     /**
-     * Channels you can use right now, with what each needs, plus the PSE banks and terms links.
+     * Channels you can use right now, with what each needs.
      *
      * @param array<string, mixed> $options
      */

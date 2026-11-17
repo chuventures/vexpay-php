@@ -8,17 +8,14 @@ use VexPay\Generated\Models as M;
 use VexPay\Resource\AbstractResource;
 
 /**
- * Colombian peso payments: PSE and Bancolombia (bank redirect), Bancolombia QR, Bre-B (QR / transfer
- * key), Nequi (push approval) or Daviplata (SMS code or redirect). Cards are taken only on the hosted checkout.
+ * Colombian peso payments: Bre-B (QR / transfer key), Nequi (push approval) or Daviplata (SMS code).
  * Payments complete asynchronously — listen for `payment.completed` / `payment.failed`.
  */
 final class Payments extends AbstractResource
 {
     /**
-     * Create a payment in whole pesos; `buyer` is required for every channel except `breb`, with
-     * `termsAccepted => true` when `cop->channels()` says `needsTermsAcceptance`; `pse` also needs
-     * `pse.bankCode`. `next->type` says what the buyer does: `show_qr`, `approve_in_app`, `submit_otp`,
-     * `redirect` (send them to `next->url`) or `redirect_pending` (retrieve again shortly).
+     * Create a payment in whole pesos; `buyer` is required for every channel except `breb`.
+     * `next->type` says what the buyer does: `show_qr`, `approve_in_app` or `submit_otp`.
      * Pass `['idempotency_key' => …]` in options to retry safely.
      *
      * @param array<string, mixed> $params
@@ -59,8 +56,8 @@ final class Payments extends AbstractResource
     }
 
     /**
-     * Full refund of a completed payment (card within 24 h, Bre-B within 96 h). Channels that cannot be
-     * refunded through the API fail with `refund_not_supported`.
+     * Full refund of a completed payment, within 96 hours of completion. A payment that can no longer
+     * be refunded through the API fails with `refund_not_supported`.
      *
      * @param array<string, mixed> $options
      */

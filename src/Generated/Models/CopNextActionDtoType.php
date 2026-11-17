@@ -11,7 +11,4 @@ enum CopNextActionDtoType: string
     case ShowQr = 'show_qr';
     case ApproveInApp = 'approve_in_app';
     case SubmitOtp = 'submit_otp';
-    case Redirect = 'redirect';
-    case RedirectPending = 'redirect_pending';
-    case Processing = 'processing';
 }
