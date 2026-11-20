@@ -40,7 +40,7 @@ writeFileSync(
   output,
   `<?php
 
-// Generated from packages/sdk-spec/openapi.json by scripts/generate-routes.mjs — do not edit.
+// Generated from packages/vexpay/sdk-spec/openapi.json by scripts/generate-routes.mjs — do not edit.
 
 declare(strict_types=1);
 

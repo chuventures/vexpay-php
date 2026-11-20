@@ -18,7 +18,7 @@ use VexPay\Exception\VexPayException;
 use VexPay\Tests\Support\MockApi;
 
 /**
- * Shared conformance: error-mapping, pagination, and retry fixtures from packages/sdk-spec.
+ * Shared conformance: error-mapping, pagination, and retry fixtures from packages/vexpay/sdk-spec.
  * Pass/fail must match the Node and Python suites.
  */
 final class ConformanceTest extends TestCase

@@ -1,6 +1,6 @@
 <?php
 
-// Generated from packages/sdk-spec/openapi.json by scripts/generate-models.mjs — do not edit.
+// Generated from packages/vexpay/sdk-spec/openapi.json by scripts/generate-models.mjs — do not edit.
 
 declare(strict_types=1);
 
@@ -53,6 +53,10 @@ final class CheckoutSessionResponseDto extends Model
         public readonly ?string $successUrl = null,
         public readonly ?string $cancelUrl = null,
         /**
+         * Text of the success button; null = default «Continuar».
+         */
+        public readonly ?string $successButtonLabel = null,
+        /**
          * Latest payment for this session, once one exists.
          */
         public readonly ?string $paymentId = null,
@@ -90,6 +94,7 @@ final class CheckoutSessionResponseDto extends Model
             reference: $data['reference'] ?? null,
             successUrl: $data['successUrl'] ?? null,
             cancelUrl: $data['cancelUrl'] ?? null,
+            successButtonLabel: $data['successButtonLabel'] ?? null,
             paymentId: $data['paymentId'] ?? null,
             merchantId: $data['merchantId'] ?? null,
             applicationFeePercent: $data['applicationFeePercent'] ?? null,

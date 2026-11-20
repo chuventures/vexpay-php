@@ -15,7 +15,7 @@ if (!input || !outDir) {
   process.exit(2);
 }
 
-const HEADER = '// Generated from packages/sdk-spec/openapi.json by scripts/generate-models.mjs — do not edit.';
+const HEADER = '// Generated from packages/vexpay/sdk-spec/openapi.json by scripts/generate-models.mjs — do not edit.';
 const NAMESPACE = 'VexPay\\Generated\\Models';
 const IDENTIFIER = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const RESERVED_PROPERTIES = new Set(['raw']);

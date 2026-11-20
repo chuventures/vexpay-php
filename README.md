@@ -45,7 +45,7 @@ $vexpay = new VexPayClient(getenv('VEXPAY_API_KEY'));
 $payer = [
     'usdAmount' => 25,
     'debtorId' => 'V12345678',
-    'debtorCellPhone' => '584141234567',
+    'debtorCellPhone' => '584141873562',
     'debtorBankCode' => 102,
 ];
 
@@ -166,7 +166,7 @@ use VexPay\VexPayClient;
 
 $vexpay = new VexPayClient(getenv('VEXPAY_API_KEY'));
 
-$customer = $vexpay->customers->create(['name' => 'Ana Pérez', 'email' => 'ana@example.com', 'phone' => '04141234567']);
+$customer = $vexpay->customers->create(['name' => 'Ana Pérez', 'email' => 'ana@example.com', 'phone' => '04141873562']);
 $price = $vexpay->prices->create(['product' => 'prod_123', 'unitAmountUsd' => 9.99, 'recurring' => ['interval' => 'month']]);
 
 // Optional: the customer authorizes domiciliación here; then subscribe with 'collectionMethod' => 'charge_automatically'.

@@ -1,6 +1,6 @@
 <?php
 
-// Generated from packages/sdk-spec/openapi.json by scripts/generate-models.mjs — do not edit.
+// Generated from packages/vexpay/sdk-spec/openapi.json by scripts/generate-models.mjs — do not edit.
 
 declare(strict_types=1);
 
@@ -20,7 +20,7 @@ final class PayoutResponseDto extends Model
          */
         public readonly PayoutResponseDtoStatus|string $status,
         /**
-         * Why the payout was held for review. `NEW_ACCOUNT_LIMIT`: the tenant or merchant is new (first 30 days) and this payout would take its rolling 24h money-out above the new-account cap (default US$300 equivalent). `BANK_UNFUNDED`: VEX Pay could not send the transfer right away on its side; it is sent once reviewed, or rejected with `rejected_bank_unfunded` and the funds returned.
+         * Why the payout was held for review. `NEW_ACCOUNT_LIMIT`: the tenant or merchant is new (first 30 days) and this payout would take its rolling 24h money-out above the new-account cap (default US$300 equivalent). `FIRST_PAYOUTS`: the first payout of a seller, or one in its first days of sales, when VEX Pay has turned that review on; rejected with `rejected_first_payouts` and the funds returned. `BANK_UNFUNDED`: VEX Pay could not send the transfer right away on its side; it is sent once reviewed, or rejected with `rejected_bank_unfunded` and the funds returned.
          */
         public readonly PayoutResponseDtoHoldReason|string|null $holdReason = null,
         /**

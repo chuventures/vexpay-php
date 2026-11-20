@@ -1,6 +1,6 @@
 <?php
 
-// Generated from packages/sdk-spec/openapi.json by scripts/generate-models.mjs — do not edit.
+// Generated from packages/vexpay/sdk-spec/openapi.json by scripts/generate-models.mjs — do not edit.
 
 declare(strict_types=1);
 
@@ -36,6 +36,10 @@ final class CreateCheckoutSessionDto extends Model
          * Where a buyer who backs out is sent.
          */
         public readonly ?string $cancelUrl = null,
+        /**
+         * Text of the button that takes the buyer to successUrl after paying (default «Continuar»). Plain text, 1–40 characters after trimming, one line. Requires successUrl.
+         */
+        public readonly ?string $successButtonLabel = null,
         /**
          * Origins allowed to embed this checkout with @vexpay/js. https only; http://localhost:* allowed for test tenants. Omit to allow the hosted URL only.
          *
@@ -78,6 +82,7 @@ final class CreateCheckoutSessionDto extends Model
             expiresInMinutes: $data['expiresInMinutes'] ?? null,
             successUrl: $data['successUrl'] ?? null,
             cancelUrl: $data['cancelUrl'] ?? null,
+            successButtonLabel: $data['successButtonLabel'] ?? null,
             allowedOrigins: $data['allowedOrigins'] ?? null,
             methods: isset($data['methods']) ? array_map(static fn ($item) => self::enumOrRaw(CreateCheckoutSessionDtoMethods::class, $item), $data['methods']) : null,
             metadata: $data['metadata'] ?? null,
