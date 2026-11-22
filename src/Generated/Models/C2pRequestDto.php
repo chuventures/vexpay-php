@@ -17,7 +17,7 @@ final class C2pRequestDto extends Model
          */
         public readonly string $debtorCellPhone,
         /**
-         * Venezuelan bank institution code (e.g. 102, 105, 134). Must match a bank from GET /v1/banks.
+         * Venezuelan bank institution code (e.g. 102, 105, 134). Must match a bank from GET /v1/banks; its `code` string ("0102") is accepted too.
          */
         public readonly float $debtorBankCode,
         /**

@@ -31,6 +31,10 @@ final class CreateMerchantDto extends Model
          * Pay this merchant's available balance automatically every 15 minutes. Omit it to use your account's `merchantAutoPayoutDefault` (GET /v1/marketplace/settings). Used only when the merchant is created; change it later with PATCH /v1/merchants/{id}.
          */
         public readonly ?bool $autoPayoutEnabled = null,
+        /**
+         * Negotiated marketplace commission (percent of vesAmount) retained from payments tagged with this merchant when the request sends no applicationFeeVes / applicationFeePercent. Omit it (or send null) to use the tenant's default commission. Used only when the merchant is created; change it later with PATCH /v1/merchants/{id}.
+         */
+        public readonly ?float $applicationFeePercent = null,
     ) {
     }
 
@@ -48,6 +52,7 @@ final class CreateMerchantDto extends Model
             bankCode: $data['bankCode'] ?? null,
             phone: $data['phone'] ?? null,
             autoPayoutEnabled: $data['autoPayoutEnabled'] ?? null,
+            applicationFeePercent: $data['applicationFeePercent'] ?? null,
         ))->withRaw($data);
     }
 }

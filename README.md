@@ -87,7 +87,7 @@ if ($current->status === CheckoutSessionResponseDtoStatus::Paid) {
 
 Enum-typed fields hold a backed enum, or the raw string when the API sends a value newer than your SDK version.
 
-The hosted page lets the buyer pick the currency — bolívares, stablecoins or Colombian pesos — and offers every method your account accepts. Limit it with `methods` (`c2p`, `vpos`, `usdt`, `usdc`, `cop`).
+The hosted page lets the buyer pick the currency — bolívares, stablecoins or Colombian pesos — and offers every method your account accepts. Limit it with `methods` (`c2p`, `pago_movil`, `vpos`, `usdt`, `usdc`, `cop`).
 
 ## Colombian pesos (COP)
 
