@@ -68,6 +68,10 @@ final class CheckoutSessionResponseDto extends Model
          * Commission percent set on the session; null = merchant or tenant default at payment time.
          */
         public readonly ?string $applicationFeePercent = null,
+        /**
+         * Set while the buyer has paid part of the total by Pago Móvil and the rest is missing. The session stays `open` past `expiresAt` until that payment completes or ends (at least 24 hours after the first transfer): keep the order open meanwhile.
+         */
+        public readonly ?CheckoutSessionPaymentInProgressDto $paymentInProgress = null,
     ) {
     }
 
@@ -98,6 +102,7 @@ final class CheckoutSessionResponseDto extends Model
             paymentId: $data['paymentId'] ?? null,
             merchantId: $data['merchantId'] ?? null,
             applicationFeePercent: $data['applicationFeePercent'] ?? null,
+            paymentInProgress: isset($data['paymentInProgress']) ? CheckoutSessionPaymentInProgressDto::fromArray($data['paymentInProgress']) : null,
         ))->withRaw($data);
     }
 }
