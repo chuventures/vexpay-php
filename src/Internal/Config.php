@@ -28,7 +28,11 @@ final class Config
         'http_client',
         'request_factory',
         'stream_factory',
+        'app_info',
     ];
+
+    private const APP_NAME_PATTERN = '/^[a-z0-9][a-z0-9._-]{0,39}$/';
+    private const APP_VERSION_PATTERN = '/^[0-9A-Za-z.+-]{1,32}$/';
 
     public readonly string $apiKey;
     public readonly string $baseUrl;
@@ -37,6 +41,13 @@ final class Config
     public readonly ClientInterface $httpClient;
     public readonly RequestFactoryInterface $requestFactory;
     public readonly StreamFactoryInterface $streamFactory;
+
+    /**
+     * Integration built on the SDK, sent in the VexPay-Client header and the User-Agent.
+     *
+     * @var array{name: string, version?: string}|null
+     */
+    public readonly ?array $appInfo;
 
     /**
      * @param array<string, mixed> $options
@@ -75,6 +86,8 @@ final class Config
         }
         $this->maxNetworkRetries = $retries;
 
+        $this->appInfo = self::appInfo($options['app_info'] ?? null);
+
         $factory = null;
         $this->httpClient = self::instance($options, 'http_client', ClientInterface::class)
             ?? new GuzzleClient(['http_errors' => false]);
@@ -82,6 +95,34 @@ final class Config
             ?? ($factory ??= new HttpFactory());
         $this->streamFactory = self::instance($options, 'stream_factory', StreamFactoryInterface::class)
             ?? ($factory ??= new HttpFactory());
+    }
+
+    /**
+     * @return array{name: string, version?: string}|null
+     */
+    private static function appInfo(mixed $value): ?array
+    {
+        if ($value === null) {
+            return null;
+        }
+        $name = is_array($value) ? ($value['name'] ?? null) : null;
+        if (!is_string($name) || preg_match(self::APP_NAME_PATTERN, $name) !== 1) {
+            throw new ConfigurationException(
+                'The "app_info" option needs a "name" of 1-40 lowercase letters, digits, ".", "_" or "-", '
+                . 'starting with a letter or digit.'
+            );
+        }
+        $version = $value['version'] ?? null;
+        if ($version === null) {
+            return ['name' => $name];
+        }
+        if (!is_string($version) || preg_match(self::APP_VERSION_PATTERN, $version) !== 1) {
+            throw new ConfigurationException(
+                'The "app_info" "version" must be 1-32 characters of 0-9, A-Z, a-z, ".", "+" or "-".'
+            );
+        }
+
+        return ['name' => $name, 'version' => $version];
     }
 
     /**

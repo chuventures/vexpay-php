@@ -22,9 +22,13 @@ final class ApiErrorDto extends Model
          */
         public readonly string|array|null $message = null,
         /**
-         * Machine-readable error code (e.g. `external_ref_conflict`, `insufficient_balance`, `idempotency_key_reused`, `live_mode_not_activated`) or, for Nest default errors, a short label such as `Bad Request`. Domain errors may include extra route-specific fields.
+         * Machine-readable error code (e.g. `external_ref_conflict`, `insufficient_balance`, `idempotency_key_reused`, `live_mode_not_activated`, `rate_limited`) or, for Nest default errors, a short label such as `Bad Request`. Domain errors may include extra route-specific fields.
          */
         public readonly ?string $error = null,
+        /**
+         * Only on a 429 `rate_limited`: whole seconds to wait before retrying (same value as the `Retry-After` header).
+         */
+        public readonly ?float $retryAfterSeconds = null,
     ) {
     }
 
@@ -37,6 +41,7 @@ final class ApiErrorDto extends Model
             statusCode: $data['statusCode'] ?? null,
             message: $data['message'] ?? null,
             error: $data['error'] ?? null,
+            retryAfterSeconds: $data['retryAfterSeconds'] ?? null,
         ))->withRaw($data);
     }
 }

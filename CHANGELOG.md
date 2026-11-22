@@ -1,9 +1,22 @@
 # Changelog
 
+## 0.22.0
+
+- Merchants: `CreateMerchantDto` / `UpdateMerchantDto` add `$displayName` (the name buyers see on the hosted checkout, 1–60 characters on one line; null = show `name`) and `$logoUrl` (a public https PNG, JPEG or WebP up to 2 MB; VEX Pay downloads it once and stores its own copy; null removes it). `MerchantResponseDto.logoUrl` reads VEX Pay's copy back.
+
+## 0.21.0
+
+- A `429` is retried only when it comes from VEX Pay's rate limiter: the body has `error` = `rate_limited` or the response has a `RateLimit` header. The SDK waits `Retry-After` (capped at 60 s) before retrying. Other 429s are risk declines (`CARD_VELOCITY_BLOCKED`, `PAYER_BLOCKED`) and now throw at once instead of being retried.
+- `RateLimitException` adds `isRateLimit()`, `getRetryAfterSeconds()`, `getRateLimit()` (the `RateLimit` header) and `getRateLimitPolicy()` (the `RateLimit-Policy` header).
+
+## 0.20.0
+
+- Every request sends a `VexPay-Client` header (SDK name and version, PHP version) so VEX Pay can measure SDK usage. New `'app_info' => ['name' => ..., 'version' => ...]` option for plugins and platforms built on the SDK: added to the header and the `User-Agent`, validated when the client is created.
+- Merchants: `CreateMerchantDto::$brandColor` / `UpdateMerchantDto::$brandColor` set the merchant's hosted-checkout brand color (`#RRGGBB`; null = the account's color). `MerchantResponseDto.brandColor` reads it back.
+
 ## 0.19.0
 
 - `CreateMerchantDto` takes `applicationFeePercent` (the merchant's commission, set on create). Product `imageUrl` and payment-link `redirectUrl` are nullable: `null` or `""` clears them. C2P `debtorBankCode` documents that the GET /v1/banks code string ("0102") is accepted too.
-
 ## 0.18.0
 
 - Checkout sessions: `CreateCheckoutSessionDto::$successButtonLabel` sets the text of the button that takes the buyer to `successUrl` after paying (default «Continuar»; plain text, 1–40 characters, one line; requires `successUrl`). `CheckoutSessionResponseDto.successButtonLabel` reads it back (`null` when unset).

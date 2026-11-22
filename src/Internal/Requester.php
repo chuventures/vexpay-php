@@ -51,9 +51,36 @@ final class Requester
         $this->random = $random ?? static fn (): float => mt_rand() / (mt_getrandmax() + 1);
     }
 
-    public static function userAgent(): string
+    /**
+     * @param array{name: string, version?: string}|null $appInfo
+     */
+    public static function userAgent(?array $appInfo = null): string
     {
-        return sprintf('vexpay-php/%s php/%s', Version::VERSION, PHP_VERSION);
+        $ua = sprintf('vexpay-php/%s php/%s', Version::VERSION, PHP_VERSION);
+        if ($appInfo !== null) {
+            $ua .= ' ' . $appInfo['name'] . (isset($appInfo['version']) ? '/' . $appInfo['version'] : '');
+        }
+
+        return $ua;
+    }
+
+    /**
+     * The VexPay-Client header (analytics only, never used for auth).
+     *
+     * @param array{name: string, version?: string}|null $appInfo
+     */
+    public static function clientHeader(?array $appInfo = null): string
+    {
+        $payload = ['sdk' => 'vexpay-php', 'sdkVersion' => Version::VERSION];
+        if (preg_match('/^[0-9A-Za-z.+-]{1,32}$/', PHP_VERSION) === 1) {
+            $payload['runtime'] = 'php';
+            $payload['runtimeVersion'] = PHP_VERSION;
+        }
+        if ($appInfo !== null) {
+            $payload['app'] = $appInfo;
+        }
+
+        return json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -138,7 +165,8 @@ final class Requester
         $request = $this->config->requestFactory->createRequest($method, $url)
             ->withHeader('Accept', 'application/json')
             ->withHeader('x-api-key', $this->config->apiKey)
-            ->withHeader('User-Agent', self::userAgent());
+            ->withHeader('User-Agent', self::userAgent($this->config->appInfo))
+            ->withHeader('VexPay-Client', self::clientHeader($this->config->appInfo));
 
         if ($body !== null) {
             $request = $request
@@ -209,7 +237,11 @@ final class Requester
             return [$body, null, null];
         }
         $requestId = $response->getHeaderLine('x-request-id');
-        $error = ErrorFactory::fromResponse($status, $body, $requestId !== '' ? $requestId : null);
+        $error = ErrorFactory::fromResponse($status, $body, $requestId !== '' ? $requestId : null, [
+            'ratelimit' => $response->getHeaderLine('ratelimit'),
+            'ratelimit-policy' => $response->getHeaderLine('ratelimit-policy'),
+            'retry-after' => $response->getHeaderLine('retry-after'),
+        ]);
 
         return [null, $error, RetryPolicy::parseRetryAfter($response->getHeaderLine('retry-after') ?: null)];
     }

@@ -19,17 +19,39 @@ final class ErrorFactory
 {
     private const MACHINE_CODE = '/^[a-z][a-z0-9_]*$/';
 
-    public static function fromResponse(int $status, mixed $body, ?string $requestId = null): VexPayException
+    /**
+     * @param array<string, string> $headers lower-case header names (only `ratelimit`,
+     *                                       `ratelimit-policy` and `retry-after` are read)
+     */
+    public static function fromResponse(int $status, mixed $body, ?string $requestId = null, array $headers = []): VexPayException
     {
         $raw = is_array($body) ? ($body['error'] ?? null) : null;
         $code = is_string($raw) && preg_match(self::MACHINE_CODE, $raw) === 1 ? $raw : null;
         $message = self::message($body, $status);
 
+        if ($status === 429) {
+            $rateLimit = ($headers['ratelimit'] ?? '') !== '' ? $headers['ratelimit'] : null;
+            $retryAfter = $headers['retry-after'] ?? null;
+            $policy = ($headers['ratelimit-policy'] ?? '') !== '' ? $headers['ratelimit-policy'] : null;
+
+            return new RateLimitException(
+                $message,
+                $status,
+                $code,
+                $body,
+                $requestId,
+                null,
+                $rateLimit !== null || $code === 'rate_limited',
+                is_numeric($retryAfter) && (float) $retryAfter >= 0 ? (float) $retryAfter : null,
+                $rateLimit,
+                $policy,
+            );
+        }
+
         $class = match (true) {
             $status === 401 => AuthenticationException::class,
             $status === 404 => NotFoundException::class,
             $status === 409 => ConflictException::class,
-            $status === 429 => RateLimitException::class,
             $status >= 500 => ApiException::class,
             default => InvalidRequestException::class,
         };

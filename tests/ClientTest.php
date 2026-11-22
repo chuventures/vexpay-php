@@ -16,6 +16,7 @@ use Psr\Http\Message\ResponseInterface;
 use VexPay\Exception\ApiConnectionException;
 use VexPay\Exception\ApiTimeoutException;
 use VexPay\Exception\ConfigurationException;
+use VexPay\Exception\RateLimitException;
 use VexPay\Exception\VexPayException;
 use VexPay\Generated\Models\BankResponseDto;
 use VexPay\Tests\Support\MockApi;
@@ -70,6 +71,34 @@ final class ClientTest extends TestCase
         self::assertSame('', $request->getHeaderLine('Idempotency-Key'));
     }
 
+    public function testSendsVexPayClientHeaderWithoutAppInfo(): void
+    {
+        $api = (new MockApi())->reply(200, []);
+        $api->client(['api_key' => 'sk_test_abc'])->banks->list();
+
+        self::assertSame(
+            ['sdk' => 'vexpay-php', 'sdkVersion' => Version::VERSION, 'runtime' => 'php', 'runtimeVersion' => PHP_VERSION],
+            json_decode($api->request()->getHeaderLine('VexPay-Client'), true),
+        );
+    }
+
+    public function testAppInfoGoesInHeaderAndUserAgent(): void
+    {
+        $api = (new MockApi())->reply(200, []);
+        $api->client(['api_key' => 'sk_test_abc', 'app_info' => ['name' => 'acme-erp', 'version' => '3.0.1']])->banks->list();
+
+        $request = $api->request();
+        self::assertSame(['name' => 'acme-erp', 'version' => '3.0.1'], json_decode($request->getHeaderLine('VexPay-Client'), true)['app']);
+        self::assertStringEndsWith(' acme-erp/3.0.1', $request->getHeaderLine('User-Agent'));
+    }
+
+    public function testRejectsInvalidAppInfo(): void
+    {
+        $this->expectException(ConfigurationException::class);
+        $this->expectExceptionMessage('"app_info"');
+        new VexPayClient(['api_key' => 'sk_test', 'app_info' => ['name' => 'My Store!']]);
+    }
+
     public function testPassesTimeoutToGuzzlePerAttempt(): void
     {
         $api = (new MockApi())->reply(200, [])->reply(200, []);
@@ -111,6 +140,7 @@ final class ClientTest extends TestCase
         self::assertSame('https://custom.test/v1/checkout/sessions', (string) $request->getUri());
         self::assertSame('sk_test', $request->getHeaderLine('x-api-key'));
         self::assertStringStartsWith('vexpay-php/', $request->getHeaderLine('User-Agent'));
+        self::assertSame('vexpay-php', json_decode($request->getHeaderLine('VexPay-Client'), true)['sdk']);
         self::assertSame('application/json', $request->getHeaderLine('Content-Type'));
         self::assertSame('{"amountUsd":25}', (string) $request->getBody());
         self::assertMatchesRegularExpression('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/', $request->getHeaderLine('Idempotency-Key'));
@@ -132,6 +162,50 @@ final class ClientTest extends TestCase
         }
         self::assertSame(3, $api->count());
         self::assertCount(2, $api->sleeps);
+    }
+
+    public function testRateLimited429IsRetriedAfterRetryAfter(): void
+    {
+        $api = (new MockApi())
+            ->reply(429, ['error' => 'rate_limited', 'message' => 'Too many requests.', 'retryAfterSeconds' => 2], ['Retry-After' => '2'])
+            ->reply(200, []);
+
+        $api->requester()->request('GET', '/v1/banks');
+        self::assertSame(2, $api->count());
+        self::assertSame([2.0], $api->sleeps);
+    }
+
+    public function testRateLimitHeaderAloneIsRetriedAndExposed(): void
+    {
+        $headers = ['RateLimit' => '"read";r=0;t=1', 'RateLimit-Policy' => '"read";q=100;w=2', 'Retry-After' => '1'];
+        $api = (new MockApi())->reply(429, null, $headers)->reply(429, null, $headers);
+
+        try {
+            $api->requester(['max_network_retries' => 1])->request('GET', '/v1/banks');
+            self::fail('expected an exception');
+        } catch (RateLimitException $error) {
+            self::assertTrue($error->isRateLimit());
+            self::assertSame(1.0, $error->getRetryAfterSeconds());
+            self::assertSame('"read";r=0;t=1', $error->getRateLimit());
+            self::assertSame('"read";q=100;w=2', $error->getRateLimitPolicy());
+        }
+        self::assertSame(2, $api->count());
+        self::assertSame([1.0], $api->sleeps);
+    }
+
+    public function testRisk429IsNotRetried(): void
+    {
+        $api = (new MockApi())->reply(429, ['statusCode' => 429, 'code' => 'CARD_VELOCITY_BLOCKED', 'message' => 'Declined.'], ['Retry-After' => '5']);
+
+        try {
+            $api->requester()->request('POST', '/v1/payments/vpos', [], []);
+            self::fail('expected an exception');
+        } catch (RateLimitException $error) {
+            self::assertFalse($error->isRateLimit());
+            self::assertSame(429, $error->getStatus());
+        }
+        self::assertSame(1, $api->count());
+        self::assertSame([], $api->sleeps);
     }
 
     public function testTimeoutsMapToTimeoutException(): void

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VexPay\Internal;
 
 use VexPay\Exception\ApiConnectionException;
+use VexPay\Exception\RateLimitException;
 use VexPay\Exception\VexPayException;
 
 /**
@@ -22,7 +23,11 @@ final class RetryPolicy
             return true;
         }
         $status = $error->getStatus();
-        if ($status === 429 || ($status !== null && $status >= 500)) {
+        if ($status === 429) {
+            // Only VEX Pay's rate limiter: other 429s are risk declines (CARD_VELOCITY_BLOCKED…).
+            return $error instanceof RateLimitException && $error->isRateLimit();
+        }
+        if ($status !== null && $status >= 500) {
             return true;
         }
 

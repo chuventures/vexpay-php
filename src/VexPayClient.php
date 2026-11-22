@@ -38,6 +38,7 @@ use VexPay\Resource\WebhookEndpoints;
  *         'timeout' => 30,              // seconds per attempt
  *         'max_network_retries' => 2,
  *         'http_client' => $psr18Client, // optional; Guzzle by default
+ *         'app_info' => ['name' => 'acme-store', 'version' => '2.1.0'], // optional; your integration
  *     ]);
  */
 final class VexPayClient
@@ -74,7 +75,7 @@ final class VexPayClient
     private readonly Requester $requester;
 
     /**
-     * @param string|array{api_key: string, base_url?: string, timeout?: int|float, max_network_retries?: int, http_client?: \Psr\Http\Client\ClientInterface, request_factory?: \Psr\Http\Message\RequestFactoryInterface, stream_factory?: \Psr\Http\Message\StreamFactoryInterface} $config
+     * @param string|array{api_key: string, base_url?: string, timeout?: int|float, max_network_retries?: int, http_client?: \Psr\Http\Client\ClientInterface, request_factory?: \Psr\Http\Message\RequestFactoryInterface, stream_factory?: \Psr\Http\Message\StreamFactoryInterface, app_info?: array{name: string, version?: string}} $config
      *        an API key, or an options array
      */
     public function __construct(string|array $config)

@@ -63,7 +63,18 @@ final class MerchantResponseDto extends Model
          */
         public readonly MerchantResponseDtoOwnerType|string|null $ownerType = null,
         public readonly MerchantResponseDtoMerchantType|string|null $merchantType = null,
+        /**
+         * Name shown to buyers on the hosted checkout; null = `name`.
+         */
         public readonly ?string $displayName = null,
+        /**
+         * URL of VEX Pay's stored copy of the merchant logo (square PNG); null = no logo.
+         */
+        public readonly ?string $logoUrl = null,
+        /**
+         * Hosted-checkout brand color for this merchant's links (`#RRGGBB`); null = your account's.
+         */
+        public readonly ?string $brandColor = null,
         /**
          * VEX Wallet user id (`ownerType = "wallet"`).
          */
@@ -111,6 +122,8 @@ final class MerchantResponseDto extends Model
             ownerType: isset($data['ownerType']) ? self::enumOrRaw(MerchantResponseDtoOwnerType::class, $data['ownerType']) : null,
             merchantType: isset($data['merchantType']) ? self::enumOrRaw(MerchantResponseDtoMerchantType::class, $data['merchantType']) : null,
             displayName: $data['displayName'] ?? null,
+            logoUrl: $data['logoUrl'] ?? null,
+            brandColor: $data['brandColor'] ?? null,
             walletUserId: $data['walletUserId'] ?? null,
             rifNumber: $data['rifNumber'] ?? null,
             accountStatus: isset($data['accountStatus']) ? self::enumOrRaw(MerchantResponseDtoAccountStatus::class, $data['accountStatus']) : null,

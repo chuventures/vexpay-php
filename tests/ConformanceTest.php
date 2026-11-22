@@ -193,4 +193,52 @@ final class ConformanceTest extends TestCase
         self::assertSame($expect['lastId'], $ids[count($ids) - 1]);
         self::assertSame($expect['paths'], $api->paths());
     }
+
+    /**
+     * @return iterable<string, array{0: array<string, string>}>
+     */
+    public static function validAppInfo(): iterable
+    {
+        foreach (self::fixture('client-identification.json')['validAppInfo'] as $i => $appInfo) {
+            yield 'valid ' . $i => [$appInfo];
+        }
+    }
+
+    /**
+     * @return iterable<string, array{0: array<string, string>}>
+     */
+    public static function invalidAppInfo(): iterable
+    {
+        foreach (self::fixture('client-identification.json')['invalidAppInfo'] as $i => $appInfo) {
+            yield 'invalid ' . $i => [$appInfo];
+        }
+    }
+
+    /**
+     * @param array<string, string> $appInfo
+     */
+    #[DataProvider('validAppInfo')]
+    public function testClientIdentificationValidAppInfo(array $appInfo): void
+    {
+        $fixture = self::fixture('client-identification.json');
+        $api = (new MockApi())->reply(200, []);
+        $api->client(['api_key' => 'sk_test', 'app_info' => $appInfo])->banks->list();
+
+        $raw = $api->request()->getHeaderLine('VexPay-Client');
+        $header = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+        self::assertLessThanOrEqual($fixture['maxBytes'], strlen($raw));
+        self::assertSame($fixture['sdkNames']['php'], $header['sdk']);
+        self::assertSame($fixture['runtimeNames']['php'], $header['runtime']);
+        self::assertSame($appInfo, $header['app']);
+    }
+
+    /**
+     * @param array<string, string> $appInfo
+     */
+    #[DataProvider('invalidAppInfo')]
+    public function testClientIdentificationInvalidAppInfo(array $appInfo): void
+    {
+        $this->expectException(\VexPay\Exception\ConfigurationException::class);
+        new \VexPay\VexPayClient(['api_key' => 'sk_test', 'app_info' => $appInfo]);
+    }
 }
