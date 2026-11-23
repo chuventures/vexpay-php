@@ -41,6 +41,22 @@ final class PaymentWebhookData
         public readonly ?bool $livemode,
         /** Present when the payment came from a checkout session. */
         public readonly ?CheckoutSessionRef $checkoutSession,
+        /**
+         * Pago Móvil paid in several transfers: each transfer counted so far, oldest first. On
+         * payment.completed, on payment.pending (once per transfer that does not complete it yet)
+         * and on an expired payment.failed that had money on it.
+         *
+         * @var list<PaymentWebhookTransfer>|null
+         */
+        public readonly ?array $transfers,
+        /** payment.pending / expired payment.failed of a Pago Móvil paid in several transfers: bolívars received so far. */
+        public readonly ?float $paidVesAmount,
+        /** payment.pending of a Pago Móvil paid in several transfers: bolívars still missing. */
+        public readonly ?float $missingVesAmount,
+        /** payment.pending of a Pago Móvil paid in several transfers: when it expires if the rest does not arrive. */
+        public readonly ?string $expiresAt,
+        /** Expired payment.failed that had money on it: true. VEX Pay support refunds what arrived to the buyer. */
+        public readonly ?bool $refundPending,
         private readonly array $raw,
     ) {
     }
@@ -51,6 +67,7 @@ final class PaymentWebhookData
     public static function fromArray(array $data): self
     {
         $session = $data['checkoutSession'] ?? null;
+        $transfers = $data['transfers'] ?? null;
 
         return new self(
             paymentId: (string) ($data['paymentId'] ?? ''),
@@ -73,6 +90,16 @@ final class PaymentWebhookData
             createdAt: self::str($data, 'createdAt'),
             livemode: isset($data['livemode']) ? (bool) $data['livemode'] : null,
             checkoutSession: is_array($session) && isset($session['id']) ? CheckoutSessionRef::fromArray($session) : null,
+            transfers: is_array($transfers)
+                ? array_values(array_map(
+                    static fn ($t): PaymentWebhookTransfer => PaymentWebhookTransfer::fromArray(is_array($t) ? $t : []),
+                    $transfers,
+                ))
+                : null,
+            paidVesAmount: self::num($data, 'paidVesAmount'),
+            missingVesAmount: self::num($data, 'missingVesAmount'),
+            expiresAt: self::str($data, 'expiresAt'),
+            refundPending: isset($data['refundPending']) ? (bool) $data['refundPending'] : null,
             raw: $data,
         );
     }

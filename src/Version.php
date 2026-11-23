@@ -6,5 +6,5 @@ namespace VexPay;
 
 final class Version
 {
-    public const VERSION = '0.23.0';
+    public const VERSION = '0.24.0';
 }

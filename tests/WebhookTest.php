@@ -129,4 +129,43 @@ final class WebhookTest extends TestCase
         $this->expectException(SignatureVerificationException::class);
         Webhook::constructEvent($payload, Webhook::generateTestHeader($payload, 's'), 's');
     }
+    public function testPartialPagoMovilPendingAndExpiredFailedCarryTheProgress(): void
+    {
+        // pago-movil-partial-webhooks: payment.pending per transfer that does not complete it yet.
+        $pending = json_encode([
+            'event' => 'payment.pending',
+            'data' => [
+                'paymentId' => 'pay-1',
+                'status' => 'PENDING',
+                'method' => 'PAGO_MOVIL',
+                'vesAmount' => 1837.53,
+                'paidVesAmount' => 1500,
+                'missingVesAmount' => 337.53,
+                'expiresAt' => '2026-11-24T01:47:26.112Z',
+                'transfers' => [['reference' => '063269956294', 'vesAmount' => 1500, 'at' => '2026-11-23T01:47:26.111Z']],
+                'livemode' => true,
+            ],
+            'timestamp' => 't',
+        ], JSON_THROW_ON_ERROR);
+        $payment = Webhook::constructEvent($pending, Webhook::generateTestHeader($pending, 's'), 's')->payment();
+        self::assertNotNull($payment);
+        self::assertSame(1500.0, $payment->paidVesAmount);
+        self::assertSame(337.53, $payment->missingVesAmount);
+        self::assertSame('2026-11-24T01:47:26.112Z', $payment->expiresAt);
+        self::assertCount(1, $payment->transfers ?? []);
+        self::assertSame('063269956294', $payment->transfers[0]->reference);
+        self::assertSame(1500.0, $payment->transfers[0]->vesAmount);
+        self::assertNull($payment->refundPending);
+
+        $failed = json_encode([
+            'event' => 'payment.failed',
+            'data' => ['paymentId' => 'pay-1', 'status' => 'FAILED', 'failureCode' => 'expired', 'paidVesAmount' => 1500, 'refundPending' => true],
+            'timestamp' => 't',
+        ], JSON_THROW_ON_ERROR);
+        $expired = Webhook::constructEvent($failed, Webhook::generateTestHeader($failed, 's'), 's')->payment();
+        self::assertNotNull($expired);
+        self::assertTrue($expired->refundPending);
+        self::assertSame(1500.0, $expired->paidVesAmount);
+        self::assertNull($expired->transfers);
+    }
 }
