@@ -6,9 +6,8 @@ declare(strict_types=1);
 
 namespace VexPay\Generated\Models;
 
-enum PagoMovilReceivingAccountDtoProvider: string
+enum OneShotPaymentLinkDtoOrigin: string
 {
-    case R4 = 'r4';
-    case Bnc = 'bnc';
-    case Sofitasa = 'sofitasa';
+    case Portal = 'portal';
+    case Api = 'api';
 }

@@ -85,6 +85,7 @@ final class ConformanceTest extends TestCase
             self::assertInstanceOf(self::ERROR_CLASS[$case['errorClass']], $error);
             self::assertSame($case['status'], $error->getStatus());
             self::assertSame($case['code'], $error->getErrorCode());
+            self::assertSame($case['docUrl'] ?? null, $error->getDocUrl());
             self::assertSame($case['body'], $error->getBody());
             self::assertSame($fixture['requestId'], $error->getRequestId());
             self::assertSame($case['message'], $error->getMessage());

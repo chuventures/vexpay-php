@@ -24,6 +24,10 @@ final class WebhookEndpointDto extends Model
          * Returned only when the endpoint is created. Store it securely; list responses omit it.
          */
         public readonly ?string $secret = null,
+        /**
+         * After a secret rotation: until when the previous secret also signs deliveries.
+         */
+        public readonly ?string $previousSecretExpiresAt = null,
     ) {
     }
 
@@ -40,6 +44,7 @@ final class WebhookEndpointDto extends Model
             isActive: self::required($data, 'isActive'),
             createdAt: self::required($data, 'createdAt'),
             secret: $data['secret'] ?? null,
+            previousSecretExpiresAt: $data['previousSecretExpiresAt'] ?? null,
         ))->withRaw($data);
     }
 }

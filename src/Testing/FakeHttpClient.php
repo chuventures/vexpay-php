@@ -26,6 +26,9 @@ final class FakeHttpClient implements ClientInterface
         'CheckoutSessions_create' => ['clientSecret' => 'cs_secret_fake', 'livemode' => false],
     ];
 
+    private const PAYMENTS_CSV_HEADER = 'id,createdAt,completedAt,status,method,usdAmount,vesAmount,rate,rateSource,'
+        . 'feeUsd,feeVes,netVes,externalRef,merchantId,bankReference,payerIdLast4';
+
     /** @var list<RecordedRequest> */
     private array $recorded = [];
 
@@ -109,6 +112,16 @@ final class FakeHttpClient implements ClientInterface
     {
         [, $template, $model] = Routes::ROUTES[$request->operationId];
 
+        if ($request->operationId === 'PaymentLinks_get') {
+            // Either kind: ids starting with plk_ are one-shot links.
+            $kind = str_starts_with($request->pathParams['id'] ?? '', 'plk_') ? 'OneShotPaymentLinkDto' : 'PaymentLinkResponseDto';
+
+            return self::json($this->body($kind, $request, $stub));
+        }
+        if ($request->operationId === 'Payments_exportPayments') {
+            // Header row only; stub a full Response (e.g. new Response(200, [], $csv)) for rows.
+            return new Response(200, ['Content-Type' => 'text/csv; charset=utf-8'], self::PAYMENTS_CSV_HEADER . "\n");
+        }
         if ($model === null) {
             if ($template === '/v1/merchants') {
                 return isset($request->query['externalRef'])

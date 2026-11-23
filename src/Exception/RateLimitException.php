@@ -22,8 +22,9 @@ class RateLimitException extends VexPayException
         private readonly ?float $retryAfterSeconds = null,
         private readonly ?string $rateLimitHeader = null,
         private readonly ?string $rateLimitPolicy = null,
+        ?string $docUrl = null,
     ) {
-        parent::__construct($message, $status, $errorCode, $body, $requestId, $previous);
+        parent::__construct($message, $status, $errorCode, $body, $requestId, $previous, $docUrl);
     }
 
     /** True when the API's rate limiter refused the request. */

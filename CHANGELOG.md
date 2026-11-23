@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.25.0
+
+- Webhook endpoints: `webhookEndpoints->listDeliveries($id, ['status' => …, 'event' => …])` (a `CursorPage`: iterate for every delivery), `resendDelivery($id, $deliveryId)` and `rotateSecret($id, ['expiresInHours' => …])`. Failed deliveries are now retried automatically (`retrying` with `nextAttemptAt`), always with the same body and `VexPay-Event-Id`, so deduplicate on it. During a rotation both secrets sign (two `v1=` entries); `Webhook::constructEvent` already accepts either.
+- Payments: `payments->list($filters)` (`status`, `method`, `merchantId`, `externalRef`, `createdFrom`, `createdTo`; a `CursorPage`) and `payments->export($filters)`, which returns the CSV text (at most 366 days and 50,000 rows: `export_range_too_long`, `export_too_large`).
+- Payment links: `paymentLinks->create(['amount' => '25.00', 'description' => …])` makes a one-shot link (`OneShotPaymentLinkDto`), `paymentLinks->list(['kind' => …, 'status' => …])` lists one-shot and product links (items hydrated by `kind`), and `paymentLinks->cancel($id)` cancels a one-shot link. `paymentLinks->retrieve($id)` now returns `OneShotPaymentLinkDto|PaymentLinkResponseDto` (check `kind`); `update` and `delete` are unchanged and work on product links only.
+- Errors: `getErrorCode()` reads the API's new stable `code` field first and falls back to `error`, so validation errors now have a code (`validation_failed`) and risk or bank declines keep theirs (`CARD_VELOCITY_BLOCKED`, `AM04`). New `VexPayException::getDocUrl()` links to the code on https://docs.vexpay.app/errors.
+- `Testing\FakeHttpClient` answers `PaymentLinks_get` with a one-shot link for `plk_…` ids and a product link otherwise, and `Payments_exportPayments` with a CSV header row.
+
+- `PagoMovilReceivingAccountDto` no longer has `$provider`, and `PagoMovilReceivingAccountDtoProvider` is removed: the API stopped returning it (tenant-facing responses never name the bank provider). Use `$bankCode` / `$bankName` to show the buyer where to pay.
+
 ## 0.24.0
 
 - Webhooks: `PaymentWebhookData` gains `$transfers` (list of `PaymentWebhookTransfer`: `reference`, `vesAmount`, `at`), `$paidVesAmount`, `$missingVesAmount`, `$expiresAt` and `$refundPending`. A Pago Móvil paid in several transfers now sends `payment.pending` for each transfer that does not complete it yet (same `paymentId` every time, so handle it idempotently). If the rest never arrives, the expired `payment.failed` carries `paidVesAmount`, `transfers` and `refundPending: true`: VEX Pay support refunds the buyer.

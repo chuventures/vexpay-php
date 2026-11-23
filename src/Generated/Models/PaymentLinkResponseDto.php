@@ -12,6 +12,10 @@ final class PaymentLinkResponseDto extends Model
 {
     public function __construct(
         public readonly string $id,
+        /**
+         * Product links are reusable; one-shot links have kind `one_shot`.
+         */
+        public readonly PaymentLinkResponseDtoKind|string $kind,
         public readonly string $productId,
         public readonly string $slug,
         /**
@@ -33,6 +37,7 @@ final class PaymentLinkResponseDto extends Model
     {
         return (new self(
             id: self::required($data, 'id'),
+            kind: self::enumOrRaw(PaymentLinkResponseDtoKind::class, self::required($data, 'kind')),
             productId: self::required($data, 'productId'),
             slug: self::required($data, 'slug'),
             hostedCheckoutPath: self::required($data, 'hostedCheckoutPath'),

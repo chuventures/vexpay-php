@@ -12,10 +12,6 @@ final class PagoMovilReceivingAccountDto extends Model
 {
     public function __construct(
         /**
-         * Provider Pago Móvil verify uses for this tenant (same routing as POST /v1/payments/pago-movil/verify).
-         */
-        public readonly PagoMovilReceivingAccountDtoProvider|string $provider,
-        /**
          * Four-digit SIMF code of the receiving bank.
          */
         public readonly string $bankCode,
@@ -51,7 +47,6 @@ final class PagoMovilReceivingAccountDto extends Model
     public static function fromArray(array $data): static
     {
         return (new self(
-            provider: self::enumOrRaw(PagoMovilReceivingAccountDtoProvider::class, self::required($data, 'provider')),
             bankCode: self::required($data, 'bankCode'),
             bankName: self::required($data, 'bankName'),
             configured: self::required($data, 'configured'),

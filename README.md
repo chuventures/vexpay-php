@@ -222,7 +222,7 @@ In plain PHP read the body with `file_get_contents('php://input')` and the heade
 
 ## Errors
 
-Every exception extends `VexPay\Exception\VexPayException` and carries `getStatus()`, the API error code (`getErrorCode()`, e.g. `insufficient_balance`), the decoded `getBody()`, and `getRequestId()`.
+Every exception extends `VexPay\Exception\VexPayException` and carries `getStatus()`, the API error code (`getErrorCode()`, e.g. `insufficient_balance`), `getDocUrl()` (the code's entry on https://docs.vexpay.app/errors), the decoded `getBody()`, and `getRequestId()`.
 
 ```php
 use VexPay\Exception\ConflictException;
@@ -422,7 +422,7 @@ Using Laravel? `VexPay::fake()` in `vexpay/laravel` wraps this with Laravel-styl
 | `quotes` | `retrieve` |
 | `balance` | `retrieve` |
 | `balance->topups` | `create`, `list`, `retrieve`, `instant`, `simulate` (load your own Bs balance by Pago Móvil; enabled per account) |
-| `payments` | `retrieve`, `retrieveByRef`, `reverse` |
+| `payments` | `list`, `export`, `retrieve`, `retrieveByRef`, `reverse`, `methods` |
 | `payments->c2p` | `request`, `execute` |
 | `payments->vpos` | `create` |
 | `payments->pagoMovil` | `receivingAccount`, `verify` |
@@ -444,9 +444,9 @@ Using Laravel? `VexPay::fake()` in `vexpay/laravel` wraps this with Laravel-styl
 | `merchants->payoutMethods` | `list`, `create`, `setDefault`, `delete`, `startVerification`, `confirmVerification` |
 | `payouts` | `create`, `createInstant`, `createBatch`, `list`, `retrieve`, `retrieveByRef` |
 | `products` | `create`, `list`, `retrieve`, `update`, `delete`, `createLink`, `listLinks` |
-| `paymentLinks` | `retrieve`, `update`, `delete` |
+| `paymentLinks` | `create`, `list`, `retrieve`, `cancel`, `update`, `delete` |
 | `tenantPayoutAccount` | `retrieve`, `upsert`, `create`, `startVerification`, `confirmVerification` |
-| `webhookEndpoints` | `create`, `list`, `update`, `delete`, `sendTest` |
+| `webhookEndpoints` | `create`, `list`, `update`, `delete`, `sendTest`, `listDeliveries`, `resendDelivery`, `rotateSecret` |
 | `customers` | `create`, `list`, `retrieve`, `update`, `delete` |
 | `customers->paymentMethods` | `list` |
 | `prices` | `create`, `list`, `retrieve`, `update` |

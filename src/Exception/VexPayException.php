@@ -16,6 +16,7 @@ class VexPayException extends \RuntimeException
         private readonly mixed $body = null,
         private readonly ?string $requestId = null,
         ?\Throwable $previous = null,
+        private readonly ?string $docUrl = null,
     ) {
         parent::__construct($message, 0, $previous);
     }
@@ -26,10 +27,19 @@ class VexPayException extends \RuntimeException
         return $this->status;
     }
 
-    /** Machine-readable API code, e.g. `insufficient_balance`. */
+    /**
+     * Stable API code: the body's `code` (e.g. `insufficient_balance`, `validation_failed`, or an
+     * uppercase risk or bank code such as `CARD_VELOCITY_BLOCKED`), else a lowercase `error`.
+     */
     public function getErrorCode(): ?string
     {
         return $this->errorCode;
+    }
+
+    /** Docs page for the code, e.g. `https://docs.vexpay.app/errors#insufficient_balance`, when the API sent one. */
+    public function getDocUrl(): ?string
+    {
+        return $this->docUrl;
     }
 
     /** Decoded response body, when the API answered. */

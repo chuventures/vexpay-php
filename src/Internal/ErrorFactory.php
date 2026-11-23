@@ -17,7 +17,11 @@ use VexPay\Exception\VexPayException;
  */
 final class ErrorFactory
 {
+    /** Legacy `error` values that are codes (not HTTP reason phrases such as `Bad Request`). */
     private const MACHINE_CODE = '/^[a-z][a-z0-9_]*$/';
+
+    /** `code` is stable: lowercase snake_case, or an uppercase risk or bank code (`PAYER_BLOCKED`, `AM04`). */
+    private const API_CODE = '/^[A-Za-z0-9][A-Za-z0-9_]*$/';
 
     /**
      * @param array<string, string> $headers lower-case header names (only `ratelimit`,
@@ -25,8 +29,8 @@ final class ErrorFactory
      */
     public static function fromResponse(int $status, mixed $body, ?string $requestId = null, array $headers = []): VexPayException
     {
-        $raw = is_array($body) ? ($body['error'] ?? null) : null;
-        $code = is_string($raw) && preg_match(self::MACHINE_CODE, $raw) === 1 ? $raw : null;
+        $code = self::code($body);
+        $docUrl = is_array($body) && is_string($body['docUrl'] ?? null) && $body['docUrl'] !== '' ? $body['docUrl'] : null;
         $message = self::message($body, $status);
 
         if ($status === 429) {
@@ -41,10 +45,11 @@ final class ErrorFactory
                 $body,
                 $requestId,
                 null,
-                $rateLimit !== null || $code === 'rate_limited',
+                $rateLimit !== null || $code === 'rate_limited' || (is_array($body) && ($body['error'] ?? null) === 'rate_limited'),
                 is_numeric($retryAfter) && (float) $retryAfter >= 0 ? (float) $retryAfter : null,
                 $rateLimit,
                 $policy,
+                $docUrl,
             );
         }
 
@@ -56,7 +61,24 @@ final class ErrorFactory
             default => InvalidRequestException::class,
         };
 
-        return new $class($message, $status, $code, $body, $requestId);
+        return new $class($message, $status, $code, $body, $requestId, null, $docUrl);
+    }
+
+    /**
+     * The body's `code` first, then a machine-readable `error` (APIs before `code` existed).
+     */
+    private static function code(mixed $body): ?string
+    {
+        if (!is_array($body)) {
+            return null;
+        }
+        $code = $body['code'] ?? null;
+        if (is_string($code) && preg_match(self::API_CODE, $code) === 1) {
+            return $code;
+        }
+        $error = $body['error'] ?? null;
+
+        return is_string($error) && preg_match(self::MACHINE_CODE, $error) === 1 ? $error : null;
     }
 
     private static function message(mixed $body, int $status): string

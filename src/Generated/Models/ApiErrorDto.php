@@ -12,6 +12,14 @@ final class ApiErrorDto extends Model
 {
     public function __construct(
         /**
+         * Stable machine-readable code, on every error. Branch on this field. Lowercase snake_case, except risk-decline and bank codes that already were uppercase (e.g. `CARD_VELOCITY_BLOCKED`, `BANK_REJECTED`), which keep their value. Each code is described at `docUrl`.
+         */
+        public readonly string $code,
+        /**
+         * The error catalog entry for `code`: what it means and what to do.
+         */
+        public readonly string $docUrl,
+        /**
          * HTTP status code mirrored in the JSON body (Nest default error shape). Absent on domain errors.
          */
         public readonly ?float $statusCode = null,
@@ -38,6 +46,8 @@ final class ApiErrorDto extends Model
     public static function fromArray(array $data): static
     {
         return (new self(
+            code: self::required($data, 'code'),
+            docUrl: self::required($data, 'docUrl'),
             statusCode: $data['statusCode'] ?? null,
             message: $data['message'] ?? null,
             error: $data['error'] ?? null,
